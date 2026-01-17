@@ -8,7 +8,7 @@ export function Calculator() {
   // State für alle Eingabewerte
   const [grossSalary, setGrossSalary] = useState<number>(6500);
   const [exchangeRate, setExchangeRate] = useState<number>(0.95);
-  const [bonus13th, setBonus13th] = useState<boolean>(false);
+  const [salaryMonths, setSalaryMonths] = useState<12 | 13 | 14>(12);
   const [age, setAge] = useState<number>(30);
   const [maritalStatus, setMaritalStatus] = useState<'single' | 'married'>('single');
   const [children, setChildren] = useState<number>(0);
@@ -23,7 +23,7 @@ export function Calculator() {
   const result = useMemo(() => {
     const input: GrenzgaengerInput = {
       grossSalaryCHF: grossSalary,
-      bonus13thSalary: bonus13th,
+      salaryMonthsPerYear: salaryMonths,
       age,
       maritalStatus,
       children,
@@ -34,7 +34,7 @@ export function Calculator() {
     };
 
     return calculateGrenzgaenger(input);
-  }, [grossSalary, exchangeRate, bonus13th, age, maritalStatus, children, commuterAllowance, familyBonus, pensionerBonus]);
+  }, [grossSalary, exchangeRate, salaryMonths, age, maritalStatus, children, commuterAllowance, familyBonus, pensionerBonus]);
 
   const formatCurrency = (amount: number, currency: 'CHF' | 'EUR') => {
     return new Intl.NumberFormat('de-CH', {
@@ -94,18 +94,20 @@ export function Calculator() {
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="bonus13th"
-              checked={bonus13th}
-              onChange={(e) => setBonus13th(e.target.checked)}
-              className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="bonus13th" className="text-sm font-medium text-slate-700">
-              13. Monatslohn einbeziehen
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+              Monatsgehälter pro Jahr
+              <InfoButton onClick={() => setActiveModal('salaryMonths')} />
             </label>
-            <InfoButton onClick={() => setActiveModal('bonus13th')} />
+            <select
+              value={salaryMonths}
+              onChange={(e) => setSalaryMonths(Number(e.target.value) as 12 | 13 | 14)}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value={12}>12 Monatsgehälter</option>
+              <option value={13}>13 Monatsgehälter</option>
+              <option value={14}>14 Monatsgehälter</option>
+            </select>
           </div>
         </div>
       </div>

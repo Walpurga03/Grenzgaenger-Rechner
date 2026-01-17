@@ -11,7 +11,7 @@ import { convertCHFtoEUR } from './currency';
 export interface GrenzgaengerInput {
   // Schweizer Einkommen
   grossSalaryCHF: number;
-  bonus13thSalary: boolean;
+  salaryMonthsPerYear: 12 | 13 | 14;
   age: number;
   
   // Persönliche Daten
@@ -65,9 +65,9 @@ export function calculateGrenzgaenger(
 ): GrenzgaengerResult {
   let { grossSalaryCHF } = input;
   
-  // 13. Monatslohn berücksichtigen
-  if (input.bonus13thSalary) {
-    grossSalaryCHF = grossSalaryCHF * 13 / 12;
+  // Monatsgehälter berücksichtigen (12/13/14)
+  if (input.salaryMonthsPerYear !== 12) {
+    grossSalaryCHF = grossSalaryCHF * input.salaryMonthsPerYear / 12;
   }
 
   // 1. Schweizer Sozialversicherungsabzüge

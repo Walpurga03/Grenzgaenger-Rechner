@@ -75,21 +75,34 @@ export const helpTexts: Record<string, HelpContent> = {
     ),
   },
 
-  bonus13th: {
-    title: '13. Monatslohn',
+  salaryMonths: {
+    title: 'Monatsgehälter pro Jahr',
     content: (
       <>
         <p className="mb-3">
-          Viele Schweizer Arbeitgeber zahlen einen <strong>13. Monatslohn</strong> (Weihnachtsgeld).
+          In der Schweiz gibt es verschiedene Modelle für die Gehaltszahlung:
         </p>
+        <ul className="list-disc pl-5 space-y-2 mb-3">
+          <li><strong>12 Monatsgehälter:</strong> Standard-Gehalt ohne Bonus</li>
+          <li><strong>13 Monatsgehälter:</strong> Häufigste Form, oft als "13. Monatslohn" oder Weihnachtsgeld</li>
+          <li><strong>14 Monatsgehälter:</strong> Seltener, mit zusätzlichem Urlaubs- oder Weihnachtsgeld</li>
+        </ul>
         <p className="mb-3">
           <strong>Wie wird es berechnet?</strong>
         </p>
         <p className="mb-3">
-          Wenn aktiviert, wird Ihr Monatslohn mit 13/12 multipliziert, um den durchschnittlichen monatlichen Betrag inklusive 13. Lohn zu berechnen.
+          Das Jahresgehalt wird gleichmäßig auf 12 Monate verteilt. Bei 13 Gehältern wird Ihr Monatslohn mit 13/12 multipliziert.
         </p>
-        <p className="text-sm bg-blue-50 border border-blue-200 rounded p-3">
-          <strong>Beispiel:</strong> CHF 6'500 × 13/12 = CHF 7'041.67 pro Monat
+        <div className="space-y-2">
+          <p className="text-sm bg-blue-50 border border-blue-200 rounded p-3">
+            <strong>Beispiel 13 Gehälter:</strong> CHF 6'500 × 13/12 = CHF 7'041.67 pro Monat
+          </p>
+          <p className="text-sm bg-blue-50 border border-blue-200 rounded p-3">
+            <strong>Beispiel 14 Gehälter:</strong> CHF 6'500 × 14/12 = CHF 7'583.33 pro Monat
+          </p>
+        </div>
+        <p className="text-sm text-slate-600 mt-3">
+          💡 Prüfen Sie Ihren Arbeitsvertrag für die genaue Anzahl der Monatsgehälter.
         </p>
       </>
     ),
