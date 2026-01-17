@@ -126,10 +126,15 @@ export function calculateProgressionReserve(
     grossIncomeEUR: totalIncome / 12,
     salaryMonths: 12,
     commuterAllowance: 0,
+    commuterDistanceKm: 0,
     familyBonusPlus: 0,
     pensionerBonus: 0,
+    soleEarnerBonus: 0,
     insuranceContribution: 0,
     swissSourceTaxEUR: 0,
+    swissAHV_ALV_EUR: 0,
+    swissBVG_EUR: 0,
+    swissKTG_NBU_EUR: 0,
   });
 
   const effectiveRate = fictiveTax.effectiveRate;

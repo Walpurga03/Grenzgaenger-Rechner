@@ -76,10 +76,6 @@ export function calculateGrenzgaenger(
   
   // Jahresbruttolohn berechnen
   const yearlyGrossCHF = grossSalaryCHF * salaryMonthsPerYear;
-  
-  // Durchschnittlicher Monatslohn (Jahresbrutto / 12)
-  // Bei 13 Gehältern: Die Sozialversicherungen werden auf das durchschnittliche Monatseinkommen berechnet
-  const avgMonthlyGrossCHF = yearlyGrossCHF / 12;
 
   // 1. Schweizer Sozialversicherungsabzüge
   // WICHTIG: Für das tatsächliche Netto verwenden wir das echte Monatsgehalt, NICHT den Durchschnitt!
