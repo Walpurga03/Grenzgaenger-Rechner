@@ -7,6 +7,7 @@ import { TAX_CONFIG } from './taxConfig';
 
 export interface SwissDeductionsInput {
   grossSalaryCHF: number;
+  yearlyGrossCHF: number;
   age: number;
 }
 
@@ -26,27 +27,25 @@ export interface SwissDeductionsResult {
 export function calculateSwissDeductions(
   input: SwissDeductionsInput
 ): SwissDeductionsResult {
-  const { grossSalaryCHF, age } = input;
+  const { grossSalaryCHF, yearlyGrossCHF, age } = input;
   const config = TAX_CONFIG.switzerland;
 
   // AHV/IV/EO - aus Config
   const ahv = grossSalaryCHF * config.ahv.rate;
 
   // ALV - Arbeitslosenversicherung
-  const monthlyGross = grossSalaryCHF;
-  const yearlyGross = monthlyGross * 12;
-  
+  // Wichtig: Verwende yearlyGrossCHF für korrekte Berechnung bei 13/14 Monatsgehältern
   let alv: number;
-  if (yearlyGross <= config.alv.yearlyLimit) {
-    alv = monthlyGross * config.alv.baseRate;
+  if (yearlyGrossCHF <= config.alv.yearlyLimit) {
+    alv = grossSalaryCHF * config.alv.baseRate;
   } else {
-    const overLimit = (yearlyGross - config.alv.yearlyLimit) / 12;
-    alv = monthlyGross * config.alv.baseRate + overLimit * config.alv.additionalRate;
+    const overLimit = (yearlyGrossCHF - config.alv.yearlyLimit) / 12;
+    alv = grossSalaryCHF * config.alv.baseRate + overLimit * config.alv.additionalRate;
   }
 
   // BVG - Berufliche Vorsorge (aus Config)
   let bvg = 0;
-  if (age >= config.bvg.minAge && yearlyGross >= config.bvg.minYearlySalary) {
+  if (age >= config.bvg.minAge && yearlyGrossCHF >= config.bvg.minYearlySalary) {
     bvg = grossSalaryCHF * config.bvg.rate;
   }
 

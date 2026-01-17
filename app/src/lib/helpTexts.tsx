@@ -36,24 +36,58 @@ export const helpTexts: Record<string, HelpContent> = {
     content: (
       <>
         <p className="mb-3">
-          Der aktuelle <strong>Wechselkurs</strong> für die Umrechnung von Schweizer Franken in Euro.
+          Der <strong>Wechselkurs</strong> gibt an, wie viele Euro Sie für einen Schweizer Franken erhalten.
         </p>
+        
+        <div className="bg-green-50 border-2 border-green-400 rounded-lg p-4 mb-4">
+          <p className="font-bold text-green-900 mb-2">💪 STAND 2026: CHF ist stärker als EUR!</p>
+          <p className="text-sm text-green-800 mb-2">
+            <strong>Aktueller Kurs:</strong> 1 CHF = ca. <strong>1,07 EUR</strong>
+          </p>
+          <p className="text-sm text-green-800 mb-3">
+            Das bedeutet: Der Schweizer Franken ist mehr wert als der Euro!<br />
+            Umgekehrt: 1 EUR = ca. 0,93 CHF
+          </p>
+          <p className="text-sm font-semibold text-green-900">
+            💡 Die App lädt automatisch den aktuellen Kurs von der EZB
+          </p>
+        </div>
+        
         <p className="mb-3">
-          <strong>Automatische Aktualisierung:</strong> Klicken Sie auf den blauen Refresh-Button, um den aktuellen Kurs von der Europäischen Zentralbank (EZB) zu laden.
+          <strong>Automatische Aktualisierung:</strong> Klicken Sie auf den blauen Refresh-Button 🔄, 
+          um den aktuellen Kurs von der Europäischen Zentralbank (EZB) zu laden.
         </p>
-        <p className="mb-3">
-          <strong>Beispiel:</strong> Bei einem Kurs von 0.95 erhalten Sie für 1 EURO etwa 0.95 CHF.
-        </p>
+        
+        <div className="space-y-2 mb-3">
+          <p className="text-sm bg-blue-50 border border-blue-200 rounded p-3">
+            <strong>Rechenbeispiel (Stand 2026):</strong><br />
+            CHF 6.500 × 1,07 (Kurs) = EUR 6.955<br />
+            CHF 7.042 × 1,07 (Kurs) = EUR 7.535
+          </p>
+        </div>
+        
         <p className="mb-3">
           <strong>Weitere Quellen für aktuelle Kurse:</strong>
         </p>
         <ul className="list-disc pl-5 space-y-1 mb-3">
-          <li>Europäische Zentralbank (EZB)</li>
+          <li>Europäische Zentralbank (EZB) - offizieller Referenzkurs</li>
           <li>Ihre Bank oder Online-Banking</li>
-          <li>Finanznachrichten-Portale</li>
+          <li>Finanznachrichten-Portale (Google Finance, Bloomberg, etc.)</li>
+          <li>
+            <a 
+              href="https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.de.html" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 underline hover:text-blue-800"
+            >
+              EZB Referenzkurse
+            </a>
+          </li>
         </ul>
+        
         <p className="text-sm text-slate-600">
-          💡 Der Kurs schwankt täglich. Die App lädt beim Start automatisch den aktuellsten Wert.
+          💡 Der Kurs schwankt täglich. Die App lädt beim Start automatisch den aktuellsten Wert 
+          im Format "1 CHF = X EUR".
         </p>
       </>
     ),
@@ -140,14 +174,27 @@ export const helpTexts: Record<string, HelpContent> = {
           Die <strong>Anzahl Ihrer Kinder</strong> reduziert die Steuerlast in beiden Ländern.
         </p>
         <p className="mb-3">
+          <strong>Für jedes Kind können Sie angeben:</strong>
+        </p>
+        <ul className="list-disc pl-5 space-y-1 mb-3">
+          <li><strong>Alter:</strong> Über 18 Jahre? (relevant für Familienbonus)</li>
+          <li><strong>Wohnsituation:</strong> Wohnt noch zuhause?</li>
+          <li><strong>Status:</strong> In Ausbildung/Student?</li>
+        </ul>
+        <p className="mb-3">
           <strong>Auswirkungen:</strong>
         </p>
         <ul className="list-disc pl-5 space-y-1 mb-3">
           <li><strong>Schweiz:</strong> Niedrigere Quellensteuer (~0.5% pro Kind)</li>
-          <li><strong>Österreich:</strong> Familienbonus Plus (siehe unten)</li>
+          <li><strong>Österreich Familienbonus Plus:</strong>
+            <ul className="list-circle pl-5 mt-1">
+              <li>Unter 18 Jahren: €166.68/Monat</li>
+              <li>Über 18 Jahren (in Ausbildung): €54.18/Monat</li>
+            </ul>
+          </li>
         </ul>
         <p className="text-sm text-slate-600">
-          💡 Kinderabzüge gelten in der Regel für Kinder unter 18 Jahren bzw. in Ausbildung.
+          💡 Kinder über 18 müssen zuhause wohnen und in Ausbildung sein, um förderberechtigt zu sein.
         </p>
       </>
     ),
@@ -160,23 +207,56 @@ export const helpTexts: Record<string, HelpContent> = {
         <p className="mb-3">
           Die österreichische <strong>Pendlerpauschale</strong> ist ein steuerlicher Absetzbetrag für Grenzgänger.
         </p>
-        <p className="mb-3">
-          <strong>Höhe abhängig von:</strong>
-        </p>
-        <ul className="list-disc pl-5 space-y-1 mb-3">
-          <li>Entfernung zwischen Wohnort und Arbeitsort</li>
-          <li>Verfügbarkeit öffentlicher Verkehrsmittel</li>
-          <li>Kleines vs. Großes Pendlerpauschale</li>
-        </ul>
-        <p className="text-sm bg-yellow-50 border border-yellow-200 rounded p-3 mb-3">
-          <strong>Typische Werte:</strong><br />
-          • Unter 20 km: €0 - €60<br />
-          • 20-40 km: €150 - €200<br />
-          • Über 60 km: €300+
-        </p>
-        <p className="text-sm text-slate-600">
-          💡 Nutzen Sie den Pendlerrechner auf finanzonline.at für Ihren exakten Betrag.
-        </p>
+        
+        <div className="mb-4">
+          <p className="font-semibold mb-2">📍 Entfernung:</p>
+          <p className="text-sm mb-2">
+            Geben Sie die <strong>einfache Entfernung</strong> (eine Richtung) zwischen Ihrem Wohnort in Österreich 
+            und Ihrer Arbeitsstätte in der Schweiz in Kilometern an.
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">🚆 Kleines Pendlerpauschale (Öffentliche Verkehrsmittel zumutbar):</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm mb-2">
+            <li>20-40 km: €58/Monat (€696/Jahr)</li>
+            <li>40-60 km: €113/Monat (€1.356/Jahr)</li>
+            <li>Ab 60 km: €168/Monat (€2.016/Jahr)</li>
+          </ul>
+          <p className="text-xs text-slate-600 italic">
+            Zumutbar = mindestens 50% der Fahrzeit mit öffentlichen Verkehrsmitteln möglich
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">🚗 Großes Pendlerpauschale (Öffentliche Verkehrsmittel unzumutbar):</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm mb-2">
+            <li>2-20 km: €31/Monat (€372/Jahr)</li>
+            <li>20-40 km: €123/Monat (€1.476/Jahr)</li>
+            <li>40-60 km: €214/Monat (€2.568/Jahr)</li>
+            <li>Ab 60 km: €306/Monat (€3.672/Jahr)</li>
+          </ul>
+          <p className="text-xs text-slate-600 italic">
+            Unzumutbar = weniger als 50% der Fahrzeit mit öffentlichen Verkehrsmitteln möglich oder 
+            Arbeitszeit vor 5:30 / nach 20:00 Uhr
+          </p>
+        </div>
+
+        <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+          <p className="text-sm font-semibold text-yellow-900 mb-1">💡 Pendlerrechner:</p>
+          <p className="text-sm text-yellow-800">
+            Nutzen Sie den offiziellen <strong>Pendlerrechner</strong> auf{' '}
+            <a 
+              href="https://pendlerrechner.bmf.gv.at/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="underline hover:text-yellow-900"
+            >
+              pendlerrechner.bmf.gv.at
+            </a>{' '}
+            für eine exakte Berechnung Ihrer individuellen Situation.
+          </p>
+        </div>
       </>
     ),
   },
@@ -205,23 +285,95 @@ export const helpTexts: Record<string, HelpContent> = {
     ),
   },
 
-  pensionerBonus: {
-    title: 'Pensionistenabsetzbetrag (AT)',
+  soleEarnerBonus: {
+    title: 'Alleinverdienerabsetzbetrag (AT)',
     content: (
       <>
         <p className="mb-3">
-          Der <strong>Pensionistenabsetzbetrag</strong> steht Pensionisten und Rentnern in Österreich zu.
+          Der <strong>Alleinverdienerabsetzbetrag</strong> ist ein österreichischer Steuerabsetzbetrag 
+          für Alleinverdiener/innen mit mindestens einem Kind.
         </p>
+        
+        <div className="mb-4">
+          <p className="font-semibold mb-2">✅ Voraussetzungen:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm mb-2">
+            <li>Sie haben mindestens <strong>1 Kind</strong></li>
+            <li>Ihr(e) (Ehe-)Partner/in verdient <strong>weniger als EUR 6.937 pro Jahr</strong></li>
+            <li>Sie leben in einem gemeinsamen Haushalt</li>
+          </ul>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">💰 Höhe des Absetzbetrags (jährlich):</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm mb-2">
+            <li><strong>Mit 1 Kind:</strong> EUR 572/Jahr (EUR 47,67/Monat)</li>
+            <li><strong>Mit 2 Kindern:</strong> EUR 778/Jahr (EUR 64,83/Monat)</li>
+            <li><strong>Mit 3 Kindern:</strong> EUR 984/Jahr (EUR 82,00/Monat)</li>
+            <li><strong>Jedes weitere Kind:</strong> + EUR 206/Jahr (+ EUR 17,17/Monat)</li>
+          </ul>
+        </div>
+
+        <div className="bg-green-50 border border-green-200 rounded p-3 mb-3">
+          <p className="text-sm font-semibold text-green-900 mb-1">Beispiel:</p>
+          <p className="text-sm text-green-800">
+            Sie haben 2 Kinder und Ihr Partner ist nicht berufstätig:<br />
+            EUR 572 + EUR 206 = <strong>EUR 778/Jahr</strong> direkt von der Steuerschuld abgezogen
+          </p>
+        </div>
+
+        <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+          <p className="text-sm font-semibold text-yellow-900 mb-1">💡 Wichtig:</p>
+          <ul className="text-sm text-yellow-800 space-y-1">
+            <li>• Wird direkt von der Steuerschuld abgezogen</li>
+            <li>• Nicht kombinierbar mit Alleinerzieherabsetzbetrag</li>
+            <li>• Partner-Einkommen darf EUR 6.937/Jahr nicht überschreiten</li>
+          </ul>
+        </div>
+      </>
+    ),
+  },
+
+  insuranceContribution: {
+    title: 'Versicherungsbeitrag (AT)',
+    content: (
+      <>
         <p className="mb-3">
-          <strong>Wer kann ihn geltend machen?</strong>
+          Hier können Sie Ihre <strong>österreichischen Versicherungsbeiträge</strong> eintragen, 
+          die Sie monatlich als Grenzgänger zahlen.
         </p>
-        <ul className="list-disc pl-5 space-y-1 mb-3">
-          <li>Bezieher einer österreichischen Pension</li>
-          <li>Grenzgänger, die bereits in Pension sind</li>
-          <li>Einkommensabhängig (max. €825 jährlich)</li>
-        </ul>
-        <p className="text-sm text-slate-600">
-          💡 Für aktive Arbeitnehmer in der Regel €0.
+        
+        <div className="mb-4">
+          <p className="font-semibold mb-2">🏥 Absetzbare Versicherungen:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm mb-2">
+            <li><strong>Krankenversicherung:</strong> Private Zusatzversicherungen</li>
+            <li><strong>Unfallversicherung:</strong> Private Unfallversicherungen</li>
+            <li><strong>Lebensversicherung:</strong> Kapitalbildende Lebensversicherungen (begrenzt)</li>
+            <li><strong>Berufsunfähigkeitsversicherung</strong></li>
+            <li><strong>Pensionsversicherung:</strong> Private Pensionsvorsorge</li>
+          </ul>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">💡 Wichtige Hinweise:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Geben Sie den <strong>monatlichen Betrag</strong> an</li>
+            <li>Nicht alle Versicherungsbeiträge sind in voller Höhe absetzbar</li>
+            <li>Die Schweizer Sozialversicherungsbeiträge (AHV, BVG etc.) werden bereits oben automatisch berechnet</li>
+            <li>Österreichische Sozialversicherung entfällt meist für Grenzgänger in die Schweiz</li>
+          </ul>
+        </div>
+
+        <div className="bg-blue-50 border border-blue-200 rounded p-3">
+          <p className="text-sm font-semibold text-blue-900 mb-1">📋 Beispiele:</p>
+          <ul className="text-sm text-blue-800 space-y-1">
+            <li>• Private Krankenversicherung: €80-150/Monat</li>
+            <li>• Lebensversicherung: €50-200/Monat</li>
+            <li>• Unfallversicherung: €20-50/Monat</li>
+          </ul>
+        </div>
+
+        <p className="text-sm text-slate-600 mt-3">
+          💡 Konsultieren Sie einen Steuerberater für die genaue steuerliche Behandlung Ihrer Versicherungsbeiträge.
         </p>
       </>
     ),

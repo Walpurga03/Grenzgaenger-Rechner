@@ -7,6 +7,7 @@ import { calculateSwissDeductions } from './swiss-deductions';
 import { calculateStGallenTax } from './st-gallen-tax';
 import { calculateAustrianTax } from './austrian-tax';
 import { convertCHFtoEUR } from './currency';
+import { type ChildDetails } from '@/types/calculator';
 
 export interface GrenzgaengerInput {
   // Schweizer Einkommen
@@ -16,12 +17,15 @@ export interface GrenzgaengerInput {
   
   // Persönliche Daten
   maritalStatus: 'single' | 'married';
-  children: number;
+  childrenDetails: ChildDetails[];
   
   // Österreichische Pauschalen
+  commuterDistanceKm: number;   // Entfernung für Pendlerpauschale und Pendlereuro
   commuterAllowanceEUR: number;
   familyBonusPlusEUR: number;
+  soleEarnerBonusEUR: number;   // Alleinverdienerabsetzbetrag
   pensionerBonusEUR: number;
+  insuranceContributionEUR: number;
   
   // Wechselkurs
   exchangeRate: number;
@@ -41,9 +45,11 @@ export interface GrenzgaengerResult {
   
   // Österreich
   austrianTaxLiabilityEUR: number;
+  austrianTaxCalculated: number; // Theoretische AT-Steuer (für Transparenz)
   
   // Finale Werte
   finalNetEUR: number;
+  finalNetEURAustrianComparison: number; // Vergleichswert mit 14 Gehältern (österreichischer Standard)
   totalTaxBurden: number;
   effectiveTaxRate: number;
   
@@ -54,6 +60,9 @@ export interface GrenzgaengerResult {
     ktgNBU: number;
     sourceTaxSG: number;
     austrianTax: number;
+    commuterAllowance: number;
+    familyBonus: number;
+    insuranceContribution: number;
   };
 }
 
@@ -63,74 +72,122 @@ export interface GrenzgaengerResult {
 export function calculateGrenzgaenger(
   input: GrenzgaengerInput
 ): GrenzgaengerResult {
-  let { grossSalaryCHF } = input;
+  const { grossSalaryCHF, salaryMonthsPerYear } = input;
   
-  // Monatsgehälter berücksichtigen (12/13/14)
-  if (input.salaryMonthsPerYear !== 12) {
-    grossSalaryCHF = grossSalaryCHF * input.salaryMonthsPerYear / 12;
-  }
+  // Jahresbruttolohn berechnen
+  const yearlyGrossCHF = grossSalaryCHF * salaryMonthsPerYear;
+  
+  // Durchschnittlicher Monatslohn (Jahresbrutto / 12)
+  // Bei 13 Gehältern: Die Sozialversicherungen werden auf das durchschnittliche Monatseinkommen berechnet
+  const avgMonthlyGrossCHF = yearlyGrossCHF / 12;
 
   // 1. Schweizer Sozialversicherungsabzüge
-  const swissDeductions = calculateSwissDeductions({
-    grossSalaryCHF,
+  // WICHTIG: Für das tatsächliche Netto verwenden wir das echte Monatsgehalt, NICHT den Durchschnitt!
+  const swissDeductionsActual = calculateSwissDeductions({
+    grossSalaryCHF: grossSalaryCHF, // Tatsächliches Monatsgehalt
+    yearlyGrossCHF,
     age: input.age,
   });
 
-  // 2. Quellensteuer St. Gallen
+  // 2. Quellensteuer St. Gallen (basierend auf Bruttolohn)
   const stGallenTax = calculateStGallenTax({
-    netSalaryCHF: swissDeductions.netSalaryCHF,
+    grossSalaryCHF: grossSalaryCHF,
     maritalStatus: input.maritalStatus,
-    children: input.children,
+    children: input.childrenDetails.length,
   });
 
-  // 3. In EUR umrechnen
+  // 3. In EUR umrechnen (tatsächliche Werte)
   const grossInEUR = convertCHFtoEUR(grossSalaryCHF, input.exchangeRate);
-  const netInEUR = convertCHFtoEUR(stGallenTax.netAfterTax, input.exchangeRate);
+  const sourceTaxEUR = convertCHFtoEUR(stGallenTax.sourceTax, input.exchangeRate);
+  
+  // Schweizer Abzüge in EUR (diese sind real bezahlt!)
+  const swissDeductionsEUR = convertCHFtoEUR(swissDeductionsActual.totalDeductions, input.exchangeRate).amountEUR;
 
-  // 4. Österreichische Steuer (informativ, da Progressionsvorbehalt)
-  const austrianTax = calculateAustrianTax({
-    grossIncomeEUR: grossInEUR.amountEUR,
+  // Für österreichische Steuer: Tatsächliches Monatsgehalt (nicht Durchschnitt)
+  const actualMonthlySalaryCHF = grossSalaryCHF;
+  const actualMonthlySalaryEUR = convertCHFtoEUR(actualMonthlySalaryCHF, input.exchangeRate);
+
+  // Schweizer Sozialversicherungsbeiträge in EUR umrechnen (steuerlich abzugsfähig in AT)
+  const swissAHV_ALV_EUR = convertCHFtoEUR(swissDeductionsActual.ahv + swissDeductionsActual.alv, input.exchangeRate).amountEUR;
+  const swissBVG_EUR = convertCHFtoEUR(swissDeductionsActual.bvg, input.exchangeRate).amountEUR;
+  const swissKTG_NBU_EUR = convertCHFtoEUR(swissDeductionsActual.ktg + swissDeductionsActual.nbu, input.exchangeRate).amountEUR;
+
+  // 4. Österreichische Steuer berechnen
+  // Die Schweizer Quellensteuer wird als Vorsteuer angerechnet
+  // Versicherungsbeiträge sind Sonderausgaben
+  // Schweizer Sozialversicherungen sind steuerlich abzugsfähig
+  const austrianTaxCalc = calculateAustrianTax({
+    grossIncomeEUR: actualMonthlySalaryEUR.amountEUR,
+    salaryMonths: salaryMonthsPerYear,
     commuterAllowance: input.commuterAllowanceEUR,
+    commuterDistanceKm: input.commuterDistanceKm,
     familyBonusPlus: input.familyBonusPlusEUR,
     pensionerBonus: input.pensionerBonusEUR,
+    soleEarnerBonus: input.soleEarnerBonusEUR,
+    insuranceContribution: input.insuranceContributionEUR,
+    swissSourceTaxEUR: sourceTaxEUR.amountEUR,
+    swissAHV_ALV_EUR,
+    swissBVG_EUR,
+    swissKTG_NBU_EUR,
   });
 
-  // Da Einkommen aus CH in AT steuerfrei ist (DBA), aber Progressionsvorbehalt gilt
-  // Für reine CH-Grenzgänger ohne weitere AT-Einkünfte: keine zusätzliche AT-Steuer
-  const austrianTaxLiabilityEUR = 0;
+  // Monatliche österreichische Steuer (nach Anrechnung CH-Quellensteuer durch DBA)
+  const austrianTaxMonthly = austrianTaxCalc.taxAfterSwissCredit / 12;
+  
+  // 5. Finales Nettoeinkommen - KORREKTE Berechnung:
+  // Die Schweizer Quellensteuer wird durch das DBA in AT angerechnet.
+  // Das bedeutet: CH-Quellensteuer ist NICHT vom Netto abzuziehen!
+  // 
+  // Rechnung:
+  // Brutto EUR
+  // - Schweizer SV-Abzüge (AHV/ALV/BVG/KTG/NBU) → real bezahlt in CH
+  // - Österreichische Steuer → schon MIT DBA-Anrechnung der CH-Quellensteuer!
+  // - Versicherung (AT)
+  // + Familienbonus
+  const finalNetEUR = grossInEUR.amountEUR 
+    - swissDeductionsEUR 
+    - austrianTaxMonthly 
+    - input.insuranceContributionEUR 
+    + input.familyBonusPlusEUR;
 
-  // Finales Nettoeinkommen
-  const finalNetEUR = netInEUR.amountEUR - austrianTaxLiabilityEUR;
+  // Österreichischer Vergleichswert: Jahresnetto auf 14 Gehälter verteilt
+  // In Österreich ist der Standard 14 Gehälter (12 + Urlaubs- & Weihnachtsgeld)
+  const yearlyNetEUR = finalNetEUR * 12;
+  const finalNetEURAustrianComparison = yearlyNetEUR / 14;
 
   // Gesamte Steuerlast
-  const sourceTaxEUR = convertCHFtoEUR(stGallenTax.sourceTax, input.exchangeRate).amountEUR;
-  const totalTaxBurden = swissDeductions.totalDeductions + stGallenTax.sourceTax;
+  const totalTaxBurden = swissDeductionsActual.totalDeductions + stGallenTax.sourceTax;
   const totalTaxBurdenEUR = convertCHFtoEUR(totalTaxBurden, input.exchangeRate).amountEUR;
   
   const effectiveTaxRate = (totalTaxBurdenEUR / grossInEUR.amountEUR) * 100;
 
   return {
-    grossSalaryCHF,
-    swissDeductions: swissDeductions.totalDeductions,
-    netAfterDeductionsCHF: swissDeductions.netSalaryCHF,
+    grossSalaryCHF: grossSalaryCHF, // Tatsächlicher Monatslohn
+    swissDeductions: swissDeductionsActual.totalDeductions,
+    netAfterDeductionsCHF: swissDeductionsActual.netSalaryCHF,
     sourceTaxCHF: stGallenTax.sourceTax,
     netAfterTaxCHF: stGallenTax.netAfterTax,
     
-    grossSalaryEUR: grossInEUR.amountEUR,
-    netAfterTaxEUR: netInEUR.amountEUR,
+    grossSalaryEUR: grossInEUR.amountEUR, // Tatsächlicher Monatslohn in EUR
+    netAfterTaxEUR: grossInEUR.amountEUR - swissDeductionsEUR - sourceTaxEUR.amountEUR, // Netto nach CH-Abzügen
     
-    austrianTaxLiabilityEUR,
+    austrianTaxLiabilityEUR: austrianTaxMonthly, // Tatsächliche monatliche AT-Steuerlast
+    austrianTaxCalculated: austrianTaxMonthly,
     
     finalNetEUR,
+    finalNetEURAustrianComparison,
     totalTaxBurden: totalTaxBurdenEUR,
     effectiveTaxRate,
     
     breakdown: {
-      ahvALV: convertCHFtoEUR(swissDeductions.ahv + swissDeductions.alv, input.exchangeRate).amountEUR,
-      bvg: convertCHFtoEUR(swissDeductions.bvg, input.exchangeRate).amountEUR,
-      ktgNBU: convertCHFtoEUR(swissDeductions.ktg + swissDeductions.nbu, input.exchangeRate).amountEUR,
-      sourceTaxSG: sourceTaxEUR,
-      austrianTax: austrianTaxLiabilityEUR,
+      ahvALV: convertCHFtoEUR(swissDeductionsActual.ahv + swissDeductionsActual.alv, input.exchangeRate).amountEUR,
+      bvg: convertCHFtoEUR(swissDeductionsActual.bvg, input.exchangeRate).amountEUR,
+      ktgNBU: convertCHFtoEUR(swissDeductionsActual.ktg + swissDeductionsActual.nbu, input.exchangeRate).amountEUR,
+      sourceTaxSG: sourceTaxEUR.amountEUR,
+      austrianTax: austrianTaxMonthly,
+      commuterAllowance: input.commuterAllowanceEUR,
+      familyBonus: input.familyBonusPlusEUR,
+      insuranceContribution: input.insuranceContributionEUR,
     },
   };
 }

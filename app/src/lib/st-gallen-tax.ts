@@ -6,7 +6,7 @@
 import { TAX_CONFIG, getTaxRateForIncome } from './taxConfig';
 
 export interface StGallenTaxInput {
-  netSalaryCHF: number;
+  grossSalaryCHF: number; // Bruttolohn (Quellensteuer wird vom Brutto berechnet!)
   maritalStatus: 'single' | 'married';
   children: number;
 }
@@ -24,18 +24,18 @@ export interface StGallenTaxResult {
 export function calculateStGallenTax(
   input: StGallenTaxInput
 ): StGallenTaxResult {
-  const { netSalaryCHF, maritalStatus, children } = input;
-  const yearlyNet = netSalaryCHF * 12;
+  const { grossSalaryCHF, maritalStatus, children } = input;
+  const yearlyGross = grossSalaryCHF * 12;
 
   // Hole Steuersatz aus Config
-  const taxRate = getTaxRateForIncome(yearlyNet, maritalStatus);
+  const taxRate = getTaxRateForIncome(yearlyGross, maritalStatus);
 
   // Kinderabzug aus Config
   const childReduction = children * TAX_CONFIG.stGallen.childReduction;
   const adjustedRate = Math.max(0, taxRate - childReduction);
 
-  const monthlySourceTax = netSalaryCHF * adjustedRate;
-  const netAfterTax = netSalaryCHF - monthlySourceTax;
+  const monthlySourceTax = grossSalaryCHF * adjustedRate;
+  const netAfterTax = grossSalaryCHF - monthlySourceTax;
 
   return {
     sourceTax: monthlySourceTax,

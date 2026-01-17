@@ -1,3 +1,9 @@
+export interface ChildDetails {
+  isOver18: boolean;
+  livesAtHome: boolean;
+  isStudent: boolean;
+}
+
 export interface IncomeInput {
   salaryCHF: number;
   bonusCHF: number;
