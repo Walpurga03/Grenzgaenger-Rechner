@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/Grenzgänger-Rechner/',
+  base: '/Grenzgaenger-Rechner/',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
