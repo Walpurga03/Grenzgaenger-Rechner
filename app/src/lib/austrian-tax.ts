@@ -53,7 +53,8 @@ export function calculateAustrianTax(
   
   // Schweizer Sozialversicherungsbeiträge (steuerlich abzugsfähig als Pflichtbeiträge)
   // Diese reduzieren das zu versteuernde Einkommen in Österreich
-  const yearlySwissSocialSecurity = (swissAHV_ALV_EUR + swissBVG_EUR + swissKTG_NBU_EUR) * 12;
+  // WICHTIG: Diese fallen für ALLE Gehälter an (12, 13 oder 14), nicht nur für 12!
+  const yearlySwissSocialSecurity = (swissAHV_ALV_EUR + swissBVG_EUR + swissKTG_NBU_EUR) * salaryMonths;
   
   const totalDeductions = yearlyCommuterAllowance + yearlyInsurance + yearlySwissSocialSecurity;
   
