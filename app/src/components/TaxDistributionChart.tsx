@@ -56,11 +56,11 @@ export function TaxDistributionChart({ result }: TaxDistributionChartProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg p-6">
-      <h3 className="text-lg font-semibold text-slate-800 mb-4">
+    <div className="bg-white rounded-lg p-4 sm:p-6">
+      <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-4">
         🥧 Verteilung der Abzüge
       </h3>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={350}>
         <PieChart>
           <Pie
             data={data}
@@ -68,7 +68,7 @@ export function TaxDistributionChart({ result }: TaxDistributionChartProps) {
             cy="50%"
             labelLine={false}
             label={renderCustomLabel}
-            outerRadius={120}
+            outerRadius={100}
             fill="#8884d8"
             dataKey="value"
           >
@@ -85,22 +85,27 @@ export function TaxDistributionChart({ result }: TaxDistributionChartProps) {
               backgroundColor: '#ffffff', 
               border: '1px solid #e2e8f0',
               borderRadius: '0.5rem',
-              padding: '0.75rem'
+              padding: '0.75rem',
+              fontSize: '0.875rem'
             }}
           />
           <Legend 
             verticalAlign="bottom"
             height={36}
             iconType="circle"
-            formatter={(value, entry: any) => `${value}: ${formatCurrency(entry.payload.value)}`}
+            wrapperStyle={{ fontSize: '0.75rem' }}
+            formatter={(value, entry: any) => {
+              const shortName = value.length > 15 ? `${value.substring(0, 15)}...` : value;
+              return `${shortName}: ${formatCurrency(entry.payload.value)}`;
+            }}
           />
         </PieChart>
       </ResponsiveContainer>
       
       <div className="mt-4 pt-4 border-t border-slate-200">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center text-xs sm:text-base">
           <p className="text-slate-600">Gesamt-Abzüge:</p>
-          <p className="text-xl font-bold text-red-600">{formatCurrency(totalDeductions)}</p>
+          <p className="text-lg sm:text-xl font-bold text-red-600">{formatCurrency(totalDeductions)}</p>
         </div>
       </div>
     </div>

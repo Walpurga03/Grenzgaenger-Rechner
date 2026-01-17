@@ -17,7 +17,7 @@ import { type ChildDetails } from '@/types/calculator';
 
 export function Calculator() {
   // State für alle Eingabewerte
-  const [grossSalary, setGrossSalary] = useState<number>(6500);
+  const [grossSalary, setGrossSalary] = useState<number>(6000);
   const [exchangeRate, setExchangeRate] = useState<number>(1.07);
   const [salaryMonths, setSalaryMonths] = useState<12 | 13 | 14>(12);
   const [age, setAge] = useState<number>(30);

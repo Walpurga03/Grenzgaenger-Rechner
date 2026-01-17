@@ -54,14 +54,14 @@ export function BreakdownChart({ result }: BreakdownChartProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg p-6">
-      <h3 className="text-lg font-semibold text-slate-800 mb-4">
+    <div className="bg-white rounded-lg p-4 sm:p-6">
+      <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-4">
         📊 Breakdown: Brutto → Netto (Ø 14 Gehälter)
       </h3>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
           data={data}
-          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          margin={{ top: 20, right: 10, left: 0, bottom: 80 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
           <XAxis 
@@ -69,11 +69,13 @@ export function BreakdownChart({ result }: BreakdownChartProps) {
             angle={-45}
             textAnchor="end"
             height={100}
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 10 }}
+            interval={0}
           />
           <YAxis 
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 10 }}
             tickFormatter={(value) => `${value > 0 ? '+' : ''}${(value / 1000).toFixed(1)}k`}
+            width={50}
           />
           <Tooltip 
             formatter={(value: number | undefined) => value !== undefined ? formatCurrency(value) : '0'}
@@ -81,11 +83,12 @@ export function BreakdownChart({ result }: BreakdownChartProps) {
               backgroundColor: '#ffffff', 
               border: '1px solid #e2e8f0',
               borderRadius: '0.5rem',
-              padding: '0.75rem'
+              padding: '0.75rem',
+              fontSize: '0.875rem'
             }}
           />
           <Legend 
-            wrapperStyle={{ paddingTop: '1rem' }}
+            wrapperStyle={{ paddingTop: '1rem', fontSize: '0.75rem' }}
             iconType="circle"
           />
           <Bar dataKey="value" radius={[8, 8, 0, 0]}>
@@ -97,7 +100,7 @@ export function BreakdownChart({ result }: BreakdownChartProps) {
       </ResponsiveContainer>
       
       <div className="mt-4 pt-4 border-t border-slate-200">
-        <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
           <div>
             <p className="text-slate-600">Brutto (CHF):</p>
             <p className="font-semibold text-blue-600">{formatCurrency(result.grossSalaryCHF)}</p>
