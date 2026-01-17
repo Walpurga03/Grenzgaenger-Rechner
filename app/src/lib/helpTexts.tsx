@@ -39,10 +39,13 @@ export const helpTexts: Record<string, HelpContent> = {
           Der aktuelle <strong>Wechselkurs</strong> für die Umrechnung von Schweizer Franken in Euro.
         </p>
         <p className="mb-3">
+          <strong>Automatische Aktualisierung:</strong> Klicken Sie auf den blauen Refresh-Button, um den aktuellen Kurs von der Europäischen Zentralbank (EZB) zu laden.
+        </p>
+        <p className="mb-3">
           <strong>Beispiel:</strong> Bei einem Kurs von 0.95 erhalten Sie für 1 CHF etwa 0.95 EUR.
         </p>
         <p className="mb-3">
-          <strong>Wo finde ich den aktuellen Kurs?</strong>
+          <strong>Weitere Quellen für aktuelle Kurse:</strong>
         </p>
         <ul className="list-disc pl-5 space-y-1 mb-3">
           <li>Europäische Zentralbank (EZB)</li>
@@ -50,7 +53,7 @@ export const helpTexts: Record<string, HelpContent> = {
           <li>Finanznachrichten-Portale</li>
         </ul>
         <p className="text-sm text-slate-600">
-          💡 Der Kurs schwankt täglich. Verwenden Sie einen Durchschnittswert für Planungen.
+          💡 Der Kurs schwankt täglich. Die App lädt beim Start automatisch den aktuellsten Wert.
         </p>
       </>
     ),

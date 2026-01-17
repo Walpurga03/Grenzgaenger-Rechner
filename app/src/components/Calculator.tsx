@@ -1,8 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { calculateGrenzgaenger, type GrenzgaengerInput } from '@/lib/calculator';
+import { fetchExchangeRate } from '@/lib/currency';
 import { InfoButton } from './InfoButton';
 import { InfoModal } from './InfoModal';
 import { helpTexts } from '@/lib/helpTexts';
+import { RefreshCw } from 'lucide-react';
 
 export function Calculator() {
   // State für alle Eingabewerte
@@ -18,6 +20,29 @@ export function Calculator() {
 
   // State für Info-Modals
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  
+  // State für Wechselkurs-Laden
+  const [isLoadingRate, setIsLoadingRate] = useState<boolean>(false);
+  const [rateLastUpdated, setRateLastUpdated] = useState<Date | null>(null);
+
+  // Wechselkurs beim Start automatisch laden
+  useEffect(() => {
+    loadExchangeRate();
+  }, []);
+
+  // Funktion zum Laden des aktuellen Wechselkurses
+  const loadExchangeRate = async () => {
+    setIsLoadingRate(true);
+    try {
+      const rate = await fetchExchangeRate();
+      setExchangeRate(rate);
+      setRateLastUpdated(new Date());
+    } catch (error) {
+      console.error('Fehler beim Laden des Wechselkurses', error);
+    } finally {
+      setIsLoadingRate(false);
+    }
+  };
 
   // Memoized Berechnung - nur neu berechnen wenn sich Inputs ändern
   const result = useMemo(() => {
@@ -74,13 +99,28 @@ export function Calculator() {
               Wechselkurs (CHF → EUR)
               <InfoButton onClick={() => setActiveModal('exchangeRate')} />
             </label>
-            <input
-              type="number"
-              step="0.0001"
-              value={exchangeRate}
-              onChange={(e) => setExchangeRate(Number(e.target.value))}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+            <div className="flex gap-2">
+              <input
+                type="number"
+                step="0.0001"
+                value={exchangeRate}
+                onChange={(e) => setExchangeRate(Number(e.target.value))}
+                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <button
+                onClick={loadExchangeRate}
+                disabled={isLoadingRate}
+                className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Aktuellen Wechselkurs von EZB laden"
+              >
+                <RefreshCw className={`w-5 h-5 ${isLoadingRate ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
+            {rateLastUpdated && (
+              <p className="text-xs text-slate-500 mt-1">
+                Zuletzt aktualisiert: {rateLastUpdated.toLocaleTimeString('de-CH')}
+              </p>
+            )}
           </div>
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">

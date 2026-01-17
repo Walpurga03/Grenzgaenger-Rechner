@@ -41,13 +41,32 @@ export function convertEURtoCHF(
 }
 
 /**
- * Holt den aktuellen EZB-Wechselkurs (Fallback-Version)
- * In Produktion könnte hier eine echte API angebunden werden
+ * Holt den aktuellen EZB-Wechselkurs CHF → EUR
+ * Verwendet die offizielle API der Europäischen Zentralbank
  */
 export async function fetchExchangeRate(): Promise<number> {
-  // Fallback: Aktueller Durchschnittswert
-  // In Zukunft: API-Call zu EZB oder anderen Quellen
-  return 0.95; // 1 CHF = 0.95 EUR (ca. Wert)
+  try {
+    // Frankfurter API - nutzt EZB Daten, kostenlos, kein API Key nötig
+    const response = await fetch('https://api.frankfurter.app/latest?from=CHF&to=EUR');
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Die API liefert z.B.: { "rates": { "EUR": 0.95 } }
+    if (data.rates && data.rates.EUR) {
+      return data.rates.EUR;
+    }
+    
+    throw new Error('Invalid API response format');
+  } catch (error) {
+    console.error('Fehler beim Abrufen des Wechselkurses:', error);
+    
+    // Fallback: Durchschnittswert wenn API nicht erreichbar
+    return 0.95;
+  }
 }
 
 /**
