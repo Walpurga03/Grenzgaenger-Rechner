@@ -3,6 +3,8 @@
  * Progressionsvorbehalt nach DBA Schweiz-Österreich
  */
 
+import { calculateAustrianTaxProgressive } from './taxConfig';
+
 export interface AustrianTaxInput {
   grossIncomeEUR: number;
   commuterAllowance: number;    // Pendlerpauschale
@@ -19,19 +21,6 @@ export interface AustrianTaxResult {
 }
 
 /**
- * Österreichische Einkommensteuertarife 2026
- * Progressive Steuersätze
- */
-const TAX_BRACKETS = [
-  { limit: 12816, rate: 0.00 },      // Steuerfrei
-  { limit: 20818, rate: 0.20 },      // 20%
-  { limit: 34513, rate: 0.30 },      // 30%
-  { limit: 66612, rate: 0.40 },      // 40%
-  { limit: 99266, rate: 0.48 },      // 48%
-  { limit: Infinity, rate: 0.50 },   // 50%
-];
-
-/**
  * Berechnet die österreichische Einkommensteuer
  */
 export function calculateAustrianTax(
@@ -46,22 +35,8 @@ export function calculateAustrianTax(
   const totalAllowances = (commuterAllowance * 12);
   const taxableIncome = Math.max(0, yearlyIncome - totalAllowances);
 
-  // Progressive Steuerberechnung
-  let incomeTax = 0;
-  let previousLimit = 0;
-
-  for (const bracket of TAX_BRACKETS) {
-    if (taxableIncome > previousLimit) {
-      const taxableInBracket = Math.min(
-        taxableIncome - previousLimit,
-        bracket.limit - previousLimit
-      );
-      incomeTax += taxableInBracket * bracket.rate;
-      previousLimit = bracket.limit;
-    } else {
-      break;
-    }
-  }
+  // Progressive Steuerberechnung aus Config
+  const incomeTax = calculateAustrianTaxProgressive(taxableIncome);
 
   // Absetzbeträge (Boni) abziehen
   const yearlyFamilyBonus = familyBonusPlus * 12;

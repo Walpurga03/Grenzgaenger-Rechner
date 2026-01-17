@@ -42,7 +42,7 @@ export const helpTexts: Record<string, HelpContent> = {
           <strong>Automatische Aktualisierung:</strong> Klicken Sie auf den blauen Refresh-Button, um den aktuellen Kurs von der Europäischen Zentralbank (EZB) zu laden.
         </p>
         <p className="mb-3">
-          <strong>Beispiel:</strong> Bei einem Kurs von 0.95 erhalten Sie für 1 CHF etwa 0.95 EUR.
+          <strong>Beispiel:</strong> Bei einem Kurs von 0.95 erhalten Sie für 1 EURO etwa 0.95 CHF.
         </p>
         <p className="mb-3">
           <strong>Weitere Quellen für aktuelle Kurse:</strong>

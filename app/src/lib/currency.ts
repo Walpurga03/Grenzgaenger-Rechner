@@ -2,6 +2,8 @@
  * Währungsumrechnung CHF ↔ EUR
  */
 
+import { TAX_CONFIG } from './taxConfig';
+
 export interface CurrencyConversion {
   amountCHF: number;
   amountEUR: number;
@@ -64,8 +66,8 @@ export async function fetchExchangeRate(): Promise<number> {
   } catch (error) {
     console.error('Fehler beim Abrufen des Wechselkurses:', error);
     
-    // Fallback: Durchschnittswert wenn API nicht erreichbar
-    return 0.95;
+    // Fallback aus Config
+    return TAX_CONFIG.exchangeRate.defaultCHFtoEUR;
   }
 }
 
@@ -73,6 +75,6 @@ export async function fetchExchangeRate(): Promise<number> {
  * Validiert einen Wechselkurs
  */
 export function validateExchangeRate(rate: number): boolean {
-  // Realistischer Bereich für CHF/EUR: 0.85 - 1.05
-  return rate >= 0.85 && rate <= 1.05;
+  const config = TAX_CONFIG.exchangeRate;
+  return rate >= config.minValidRate && rate <= config.maxValidRate;
 }

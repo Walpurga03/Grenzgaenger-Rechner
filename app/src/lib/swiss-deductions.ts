@@ -3,6 +3,8 @@
  * Kanton St. Gallen
  */
 
+import { TAX_CONFIG } from './taxConfig';
+
 export interface SwissDeductionsInput {
   grossSalaryCHF: number;
   age: number;
@@ -25,37 +27,34 @@ export function calculateSwissDeductions(
   input: SwissDeductionsInput
 ): SwissDeductionsResult {
   const { grossSalaryCHF, age } = input;
+  const config = TAX_CONFIG.switzerland;
 
-  // AHV/IV/EO - 5.3% (Arbeitnehmeranteil)
-  const ahv = grossSalaryCHF * 0.053;
+  // AHV/IV/EO - aus Config
+  const ahv = grossSalaryCHF * config.ahv.rate;
 
   // ALV - Arbeitslosenversicherung
-  // Bis CHF 148'200: 1.1%
-  // Über CHF 148'200: zusätzlich 0.5% auf den Mehrbetrag
-  let alv: number;
-  const alvLimit = 148200;
   const monthlyGross = grossSalaryCHF;
   const yearlyGross = monthlyGross * 12;
-
-  if (yearlyGross <= alvLimit) {
-    alv = monthlyGross * 0.011;
+  
+  let alv: number;
+  if (yearlyGross <= config.alv.yearlyLimit) {
+    alv = monthlyGross * config.alv.baseRate;
   } else {
-    const overLimit = (yearlyGross - alvLimit) / 12;
-    alv = monthlyGross * 0.011 + overLimit * 0.005;
+    const overLimit = (yearlyGross - config.alv.yearlyLimit) / 12;
+    alv = monthlyGross * config.alv.baseRate + overLimit * config.alv.additionalRate;
   }
 
-  // BVG - Berufliche Vorsorge (durchschnittlich 6-8%, hier 7%)
-  // Gilt ab 18 Jahren und ab CHF 22'050 Jahreslohn
+  // BVG - Berufliche Vorsorge (aus Config)
   let bvg = 0;
-  if (age >= 18 && yearlyGross >= 22050) {
-    bvg = grossSalaryCHF * 0.07;
+  if (age >= config.bvg.minAge && yearlyGross >= config.bvg.minYearlySalary) {
+    bvg = grossSalaryCHF * config.bvg.rate;
   }
 
-  // KTG - Krankentaggeldversicherung (ca. 1.4%)
-  const ktg = grossSalaryCHF * 0.014;
+  // KTG - Krankentaggeldversicherung (aus Config)
+  const ktg = grossSalaryCHF * config.ktg.rate;
 
-  // NBU - Nichtberufsunfallversicherung (ca. 1%)
-  const nbu = grossSalaryCHF * 0.01;
+  // NBU - Nichtberufsunfallversicherung (aus Config)
+  const nbu = grossSalaryCHF * config.nbu.rate;
 
   const totalDeductions = ahv + alv + bvg + ktg + nbu;
   const netSalaryCHF = grossSalaryCHF - totalDeductions;

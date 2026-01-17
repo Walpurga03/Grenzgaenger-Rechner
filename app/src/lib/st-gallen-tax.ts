@@ -3,6 +3,8 @@
  * Vereinfachte Berechnung basierend auf Tarif G (Alleinstehend)
  */
 
+import { TAX_CONFIG, getTaxRateForIncome } from './taxConfig';
+
 export interface StGallenTaxInput {
   netSalaryCHF: number;
   maritalStatus: 'single' | 'married';
@@ -25,43 +27,11 @@ export function calculateStGallenTax(
   const { netSalaryCHF, maritalStatus, children } = input;
   const yearlyNet = netSalaryCHF * 12;
 
-  // Vereinfachte Steuertarife für SG (Tarif G - Grenzgänger)
-  // Diese sind Näherungswerte und sollten mit aktuellen Tarifen abgeglichen werden
-  let taxRate: number;
+  // Hole Steuersatz aus Config
+  const taxRate = getTaxRateForIncome(yearlyNet, maritalStatus);
 
-  if (maritalStatus === 'single') {
-    if (yearlyNet <= 20000) {
-      taxRate = 0.00;
-    } else if (yearlyNet <= 40000) {
-      taxRate = 0.02;
-    } else if (yearlyNet <= 60000) {
-      taxRate = 0.04;
-    } else if (yearlyNet <= 80000) {
-      taxRate = 0.06;
-    } else if (yearlyNet <= 100000) {
-      taxRate = 0.08;
-    } else {
-      taxRate = 0.10;
-    }
-  } else {
-    // Verheiratet - niedrigere Steuersätze
-    if (yearlyNet <= 30000) {
-      taxRate = 0.00;
-    } else if (yearlyNet <= 50000) {
-      taxRate = 0.015;
-    } else if (yearlyNet <= 70000) {
-      taxRate = 0.03;
-    } else if (yearlyNet <= 90000) {
-      taxRate = 0.05;
-    } else if (yearlyNet <= 110000) {
-      taxRate = 0.07;
-    } else {
-      taxRate = 0.09;
-    }
-  }
-
-  // Kinderabzug (ca. 0.5% Reduktion pro Kind)
-  const childReduction = children * 0.005;
+  // Kinderabzug aus Config
+  const childReduction = children * TAX_CONFIG.stGallen.childReduction;
   const adjustedRate = Math.max(0, taxRate - childReduction);
 
   const monthlySourceTax = netSalaryCHF * adjustedRate;
