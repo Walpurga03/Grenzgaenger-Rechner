@@ -1,5 +1,8 @@
 import { useState, useMemo } from 'react';
 import { calculateGrenzgaenger, type GrenzgaengerInput } from '@/lib/calculator';
+import { InfoButton } from './InfoButton';
+import { InfoModal } from './InfoModal';
+import { helpTexts } from '@/lib/helpTexts';
 
 export function Calculator() {
   // State für alle Eingabewerte
@@ -12,6 +15,9 @@ export function Calculator() {
   const [commuterAllowance, setCommuterAllowance] = useState<number>(200);
   const [familyBonus, setFamilyBonus] = useState<number>(125);
   const [pensionerBonus, setPensionerBonus] = useState<number>(0);
+
+  // State für Info-Modals
+  const [activeModal, setActiveModal] = useState<string | null>(null);
 
   // Memoized Berechnung - nur neu berechnen wenn sich Inputs ändern
   const result = useMemo(() => {
@@ -52,8 +58,9 @@ export function Calculator() {
         <h3 className="text-xl font-semibold mb-4">Schweizer Lohndaten</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
               Bruttolohn (CHF) monatlich
+              <InfoButton onClick={() => setActiveModal('grossSalary')} />
             </label>
             <input
               type="number"
@@ -63,8 +70,9 @@ export function Calculator() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
               Wechselkurs (CHF → EUR)
+              <InfoButton onClick={() => setActiveModal('exchangeRate')} />
             </label>
             <input
               type="number"
@@ -75,8 +83,9 @@ export function Calculator() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
               Alter
+              <InfoButton onClick={() => setActiveModal('age')} />
             </label>
             <input
               type="number"
@@ -85,7 +94,7 @@ export function Calculator() {
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <input
               type="checkbox"
               id="bonus13th"
@@ -93,9 +102,10 @@ export function Calculator() {
               onChange={(e) => setBonus13th(e.target.checked)}
               className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
             />
-            <label htmlFor="bonus13th" className="ml-2 text-sm font-medium text-slate-700">
+            <label htmlFor="bonus13th" className="text-sm font-medium text-slate-700">
               13. Monatslohn einbeziehen
             </label>
+            <InfoButton onClick={() => setActiveModal('bonus13th')} />
           </div>
         </div>
       </div>
@@ -104,8 +114,9 @@ export function Calculator() {
         <h3 className="text-xl font-semibold mb-4">Persönliche Daten</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
               Familienstand
+              <InfoButton onClick={() => setActiveModal('maritalStatus')} />
             </label>
             <select
               value={maritalStatus}
@@ -117,8 +128,9 @@ export function Calculator() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
               Anzahl Kinder
+              <InfoButton onClick={() => setActiveModal('children')} />
             </label>
             <input
               type="number"
@@ -135,8 +147,9 @@ export function Calculator() {
         <h3 className="text-xl font-semibold mb-4">Österreichische Abzüge & Pauschalen</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
               Pendlerpauschale (EUR) monatlich
+              <InfoButton onClick={() => setActiveModal('commuterAllowance')} />
             </label>
             <input
               type="number"
@@ -146,8 +159,9 @@ export function Calculator() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
               Familienbonus Plus (EUR) monatlich
+              <InfoButton onClick={() => setActiveModal('familyBonus')} />
             </label>
             <input
               type="number"
@@ -157,8 +171,9 @@ export function Calculator() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
               Pensionistenabsetzbetrag (EUR) monatlich
+              <InfoButton onClick={() => setActiveModal('pensionerBonus')} />
             </label>
             <input
               type="number"
@@ -210,6 +225,18 @@ export function Calculator() {
           PDF-Bericht herunterladen
         </button>
       </div>
+
+      {/* Info Modals */}
+      {Object.entries(helpTexts).map(([key, help]) => (
+        <InfoModal
+          key={key}
+          isOpen={activeModal === key}
+          onClose={() => setActiveModal(null)}
+          title={help.title}
+        >
+          {help.content}
+        </InfoModal>
+      ))}
     </div>
   );
 }
