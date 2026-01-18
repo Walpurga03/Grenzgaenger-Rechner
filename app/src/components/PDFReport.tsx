@@ -330,38 +330,65 @@ export function PDFReport({ result, inputData }: PDFReportProps) {
           <View style={{ marginTop: 8, fontSize: 9, lineHeight: 1.5 }}>
             <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Schweizer Sozialversicherungen:</Text>
             <Text style={{ marginBottom: 10 }}>
-              Die schweizerischen Pflichtbeiträge (AHV, ALV, BVG, KTG, NBU) werden vom Bruttolohn 
-              abgezogen (Sie zahlen sie). In Österreich sind sie als Werbungskosten/Sonderausgaben 
-              steuerlich abzugsfähig - das bedeutet, sie reduzieren Ihr zu versteuerndes Einkommen 
-              und damit die Steuerlast. WICHTIG: Sie sind keine Rückerstattung, sondern reduzieren 
-              nur die Steuer.
+              Die schweizerischen Pflichtbeiträge (AHV 5,3%, ALV 1,1%, BVG 7%, KTG 1,4%, NBU 1%) werden 
+              vom Bruttolohn abgezogen und von Ihnen bezahlt. In Österreich sind sie als Werbungskosten/
+              Sonderausgaben steuerlich abzugsfähig - das bedeutet, sie reduzieren Ihr zu versteuerndes 
+              Einkommen und damit die Steuerlast. WICHTIG: Sie sind keine Rückerstattung, sondern 
+              reduzieren nur die Bemessungsgrundlage für die österreichische Steuer.
             </Text>
             
-            <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Quellensteuer-Anrechnung:</Text>
+            <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Quellensteuer St. Gallen (4,5%):</Text>
             <Text style={{ marginBottom: 10 }}>
-              Die Schweizer Quellensteuer (4,5%) wird in Österreich NICHT zusätzlich abgezogen, 
-              sondern voll auf die österreichische Einkommensteuerschuld angerechnet. Durch das 
-              Doppelbesteuerungsabkommen (DBA) zahlen Sie effektiv keine doppelte Steuer. ABER: 
-              Der Lohn ist NICHT steuerfrei - Sie müssen in AT die volle Einkommensteuer zahlen!
+              Die Schweizer Quellensteuer wird direkt vom Lohn abgezogen und in der Schweiz bezahlt. 
+              Sie wird dann in Österreich NICHT zusätzlich abgezogen, sondern voll auf die österreichische 
+              Einkommensteuerschuld angerechnet (Doppelbesteuerungsabkommen/DBA). Das bedeutet: Sie zahlen 
+              keine doppelte Steuer! ABER: Der Lohn ist nicht steuerfrei - Sie müssen in Österreich die 
+              volle Einkommensteuer zahlen, können aber die bereits bezahlte Schweizer Quellensteuer anrechnen.
             </Text>
             
             <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>13./14. Gehalt (Sonderzahlungen):</Text>
             <Text style={{ marginBottom: 10 }}>
               In Österreich werden Sonderzahlungen (Urlaubs-/Weihnachtsgeld) begünstigt mit 6% 
-              besteuert (auf Beträge über EUR 620 Freibetrag), nicht mit dem progressiven Steuersatz.
+              besteuert (auf Beträge über EUR 620 Freibetrag pro Zahlung), nicht mit dem progressiven Steuersatz.
+            </Text>
+            
+            <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Progressionsvorbehalt:</Text>
+            <Text style={{ marginBottom: 10 }}>
+              Wichtig zu verstehen: Obwohl das 13./14. Gehalt nur mit 6% besteuert wird, erhöhen diese 
+              Sonderzahlungen den Steuersatz für Ihr reguläres Gehalt (12 Monate). Das Finanzamt berechnet 
+              einen fiktiven Steuersatz auf Basis Ihres Gesamteinkommens (14 Monate) und wendet diesen auf 
+              die 12 Monatsgehälter an. Trotzdem bleibt der Nettoeffekt positiv, da die Ersparnis auf den 
+              Sonderzahlungen (6% statt 30-50%) deutlich größer ist als der Mehraufwand auf die 12 Monate.
+            </Text>
+            
+            <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Werbungskostenpauschale:</Text>
+            <Text style={{ marginBottom: 10 }}>
+              Jedem Arbeitnehmer in Österreich steht automatisch ein Pauschbetrag von EUR 132/Jahr zu. 
+              Dieser wird automatisch vom zu versteuernden Einkommen abgezogen. Falls Ihre tatsächlichen 
+              beruflichen Kosten höher sind, können Sie die echten Kosten geltend machen.
+            </Text>
+            
+            <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Versicherungsbeiträge (Sonderausgaben):</Text>
+            <Text style={{ marginBottom: 10 }}>
+              Kranken- und Unfallversicherungsbeiträge sind als Sonderausgaben steuerlich absetzbar. 
+              Das bedeutet: Sie reduzieren Ihr zu versteuerndes Einkommen (Bemessungsgrundlage), werden 
+              aber trotzdem voll von Ihrem Netto abgezogen. Beispiel: Bei 550 EUR Versicherung/Monat und 
+              35% Steuersatz sparen Sie ca. 180 EUR Steuern, zahlen aber trotzdem 550 EUR. Die realen 
+              Kosten für Sie betragen also ca. 370 EUR (550 EUR - 180 EUR Steuerersparnis).
+            </Text>
+            
+            <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Pendlerpauschale und Pendlereuro:</Text>
+            <Text style={{ marginBottom: 10 }}>
+              Die Pendlerpauschale reduziert die Steuerbasis (monatlich: kleine PP 58-333 EUR, große PP 
+              124-1.476 EUR je nach Entfernung). Der Pendlereuro wird zusätzlich direkt von der Steuerschuld 
+              abgezogen (Entfernung in km × 2 EUR pro Jahr, monatlich: Entfernung × 2 / 12).
             </Text>
             
             <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Familienbonus Plus:</Text>
             <Text style={{ marginBottom: 10 }}>
               Kinder unter 18 Jahren: EUR 166,68/Monat | Kinder über 18 (zuhause, in Ausbildung): 
-              EUR 54,18/Monat. Der Bonus wird direkt von der Steuerschuld abgezogen.
-            </Text>
-            
-            <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Pendlereuro:</Text>
-            <Text style={{ marginBottom: 10 }}>
-              Zusätzlich zur Pendlerpauschale können Sie den Pendlereuro geltend machen. 
-              Berechnung: Entfernung in km × 2 EUR pro Jahr (monatlich: Entfernung × 2 / 12). 
-              Wird direkt von der Steuerschuld abgezogen.
+              EUR 54,18/Monat. Der Bonus wird direkt von der Steuerschuld abgezogen, solange 
+              Familienbeihilfe bezogen wird.
             </Text>
             
             {inputData.soleEarnerBonusEUR > 0 && (
@@ -375,10 +402,12 @@ export function PDFReport({ result, inputData }: PDFReportProps) {
               </>
             )}
             
-            <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Progressionsvorbehalt:</Text>
+            <Text style={{ fontWeight: 'bold', marginBottom: 4, fontSize: 10 }}>Effektive Steuerlast:</Text>
             <Text style={{ marginBottom: 10 }}>
-              Österreich ermittelt den Steuersatz unter Berücksichtigung des weltweiten Einkommens, 
-              besteuert aber nur die in Österreich steuerpflichtigen Einkünfte.
+              Die effektive Steuerlast zeigt den Gesamtanteil aller Abzüge (CH-Sozialversicherungen, 
+              Quellensteuer, AT-Steuer, Versicherung) minus Absetzbeträge (Familienbonus, Pendlereuro, 
+              Alleinverdienerabsetzbetrag) am Bruttoeinkommen. Dies gibt einen realistischen Überblick 
+              über die Gesamtbelastung Ihres Einkommens.
             </Text>
           </View>
         </View>
@@ -390,7 +419,9 @@ export function PDFReport({ result, inputData }: PDFReportProps) {
             Diese Berechnung dient ausschließlich zu Informationszwecken und stellt keine Steuerberatung dar. 
             Alle Angaben sind ohne Gewähr. Für verbindliche Auskünfte wenden Sie sich bitte an einen 
             Steuerberater oder die zuständigen Finanzbehörden. Die tatsächliche Steuerlast kann je nach 
-            individueller Situation abweichen.
+            individueller Situation abweichen. Berücksichtigt sind: Werbungskostenpauschale (132 EUR/Jahr), 
+            Progressionsvorbehalt (13./14. Gehalt erhöht Steuersatz für 12 Monate), DBA-Anrechnung der 
+            CH-Quellensteuer, und alle aktuellen Absetzbeträge (Stand 2024/2025).
           </Text>
         </View>
 

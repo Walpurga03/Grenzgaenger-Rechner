@@ -296,6 +296,93 @@ export function TaxTips() {
         </div>
       </section>
 
+      {/* Besonderheit: Progressionsvorbehalt */}
+      <section className="mb-8 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg shadow-sm border border-yellow-300 p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-3 bg-yellow-100 rounded-lg">
+            <AlertCircle className="w-6 h-6 text-yellow-700" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900">Progressionsvorbehalt bei Sonderzahlungen</h2>
+            <p className="text-sm text-slate-600">Wichtig zu verstehen: Wie 13./14. Gehalt Ihre Steuerrate beeinflusst</p>
+          </div>
+        </div>
+        
+        <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
+          <p className="text-sm text-slate-800 mb-2">
+            <strong>⚠️ Das klingt komplex, ist aber wichtig zu verstehen:</strong>
+          </p>
+          <p className="text-sm text-slate-700">
+            In Österreich werden 13. und 14. Gehalt mit nur 6% besteuert (ab 620 € Freibetrag). Das ist sehr günstig! 
+            ABER: Diese Sonderzahlungen erhöhen trotzdem Ihren Steuersatz für Ihr reguläres Gehalt (12 Monate).
+          </p>
+        </div>
+        
+        <div className="space-y-4 mt-6">
+          <div className="p-4 bg-white rounded-lg border border-yellow-300">
+            <h3 className="font-semibold text-slate-900 mb-2">Was bedeutet das konkret?</h3>
+            <p className="text-slate-600 text-sm mb-2">
+              Das Finanzamt berechnet zunächst einen <strong>fiktiven Steuersatz</strong>, als ob Sie Ihr gesamtes 
+              Jahreseinkommen (also 14 Monate) normal versteuern würden. Dieser höhere Steuersatz wird dann auf 
+              Ihr reguläres Gehalt (12 Monate) angewendet.
+            </p>
+            <p className="text-slate-600 text-sm">
+              Das 13. und 14. Gehalt selbst wird trotzdem nur mit 6% besteuert. Es geht NUR um den Effekt auf 
+              die 12 Monatsgehälter.
+            </p>
+          </div>
+
+          <div className="p-4 bg-white rounded-lg border border-yellow-300">
+            <h3 className="font-semibold text-slate-900 mb-2">Beispielrechnung:</h3>
+            <div className="text-slate-600 text-sm space-y-2">
+              <p>
+                <strong>Ohne 13./14. Gehalt:</strong><br/>
+                • 12 × 6.000 CHF = 72.000 CHF/Jahr<br/>
+                • Steuersatz bei 72.000 CHF: ca. 30%<br/>
+                • Steuer: 72.000 × 30% = 21.600 CHF
+              </p>
+              <p>
+                <strong>Mit 13./14. Gehalt (Progressionsvorbehalt):</strong><br/>
+                • 14 × 6.000 CHF = 84.000 CHF/Jahr<br/>
+                • Fiktiver Steuersatz bei 84.000 CHF: ca. 35% (höher wegen Progression!)<br/>
+                • Steuer auf 12 Monate: 72.000 × 35% = 25.200 CHF<br/>
+                • Steuer auf 13./14.: (12.000 - 1.240 Freibetrag) × 6% = 645 CHF<br/>
+                • <strong>Gesamtsteuer: 25.845 CHF</strong>
+              </p>
+              <p className="pt-2 border-t border-yellow-200">
+                <strong>Vorteil trotzdem:</strong> Würde man die 84.000 CHF komplett mit 35% versteuern, 
+                wären es 29.400 CHF. Durch die Begünstigung sparen Sie also ca. 3.555 CHF!
+              </p>
+            </div>
+          </div>
+
+          <div className="p-4 bg-white rounded-lg border border-yellow-300">
+            <h3 className="font-semibold text-slate-900 mb-2">Warum ist das System trotzdem vorteilhaft?</h3>
+            <p className="text-slate-600 text-sm mb-2">
+              Auch wenn die 12 Monatsgehälter durch den Progressionsvorbehalt etwas höher besteuert werden, 
+              bleibt der Gesamteffekt <strong>stark positiv</strong>:
+            </p>
+            <ul className="text-slate-600 text-sm space-y-1 list-disc list-inside">
+              <li>Das 13./14. Gehalt wird nur mit 6% statt mit 30-50% besteuert</li>
+              <li>Die Ersparnis auf den Sonderzahlungen ist deutlich größer als der Mehraufwand auf die 12 Monate</li>
+              <li>Unterm Strich zahlen Sie weniger Steuern als bei einer einheitlichen Besteuerung aller 14 Monate</li>
+            </ul>
+          </div>
+
+          <div className="p-4 bg-green-50 rounded-lg border border-green-300">
+            <h3 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
+              ✅ Fazit
+            </h3>
+            <p className="text-green-800 text-sm">
+              Der Progressionsvorbehalt ist eine <strong>technische Berechnungsmethode</strong>, die sicherstellt, 
+              dass höhere Einkommen nicht unfair von der 6%-Regelung profitieren. Für Sie als Grenzgänger bedeutet 
+              es: Sie zahlen auf die Sonderzahlungen nur 6% Steuer, aber Ihr reguläres Gehalt wird etwas höher 
+              besteuert, als wenn es keine Sonderzahlungen gäbe. <strong>Der Nettoeffekt bleibt aber positiv!</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Profi-Tipps */}
       <section className="mb-8 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg shadow-sm border border-indigo-200 p-6">
         <div className="flex items-center gap-3 mb-4">
