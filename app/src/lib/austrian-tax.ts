@@ -32,6 +32,10 @@ export interface AustrianTaxResult {
 
 /**
  * Berechnet die österreichische Einkommensteuer
+ * 
+ * WICHTIG: Progressionsvorbehalt für Sonderzahlungen!
+ * Das 13./14. Gehalt wird zwar nur mit 6% besteuert, erhöht aber den Steuersatz
+ * für die laufenden Bezüge. Das Gesamteinkommen bestimmt die Progressionsstufe.
  */
 export function calculateAustrianTax(
   input: AustrianTaxInput
@@ -51,31 +55,49 @@ export function calculateAustrianTax(
   const yearlyCommuterAllowance = commuterAllowance * 12;
   const yearlyInsurance = insuranceContribution * 12;
   
-  // Schweizer Sozialversicherungsbeiträge (steuerlich abzugsfähig als Pflichtbeiträge)
-  // Diese reduzieren das zu versteuernde Einkommen in Österreich
-  // WICHTIG: Diese fallen für ALLE Gehälter an (12, 13 oder 14), nicht nur für 12!
-  const yearlySwissSocialSecurity = (swissAHV_ALV_EUR + swissBVG_EUR + swissKTG_NBU_EUR) * salaryMonths;
+  // Werbungskostenpauschale (Standard in Österreich)
+  const werbungskostenPauschale = 132; // EUR pro Jahr
   
-  const totalDeductions = yearlyCommuterAllowance + yearlyInsurance + yearlySwissSocialSecurity;
+  // Schweizer Sozialversicherungsbeiträge (steuerlich abzugsfähig als Pflichtbeiträge)
+  // WICHTIG: Nur die CH-Abzüge für die LAUFENDEN BEZÜGE (12 Monate) sind hier relevant!
+  const yearlySwissSocialSecurityForRegular = (swissAHV_ALV_EUR + swissBVG_EUR + swissKTG_NBU_EUR) * 12;
+  
+  const totalDeductions = yearlyCommuterAllowance + yearlyInsurance + yearlySwissSocialSecurityForRegular + werbungskostenPauschale;
   
   // Zu versteuerndes Einkommen für laufende Bezüge
   const taxableRegularIncome = Math.max(0, yearlyRegularIncome - totalDeductions);
 
-  // Progressive Steuerberechnung für laufende Bezüge (12 Monate)
-  const regularIncomeTax = calculateAustrianTaxProgressive(taxableRegularIncome);
+  // PROGRESSIONSVORBEHALT: Gesamteinkommen inkl. Sonderzahlungen bestimmt den Steuersatz!
+  // Das 13./14. Gehalt wird zwar nur mit 6% besteuert, erhöht aber die Progression
+  let regularIncomeTax = 0;
+  
+  if (salaryMonths > 12) {
+    // Mit Progressionsvorbehalt: Berechne fiktiven Steuersatz auf Gesamteinkommen
+    const sonderzahlungsBrutto = regularMonthlyIncome * (salaryMonths - 12);
+    const fiktivesGesamteinkommen = taxableRegularIncome + sonderzahlungsBrutto;
+    
+    // Berechne Steuer auf fiktives Gesamteinkommen
+    const fiktiveSteuer = calculateAustrianTaxProgressive(fiktivesGesamteinkommen);
+    
+    // Berechne effektiven Steuersatz
+    const effektiverSteuersatz = fiktivesGesamteinkommen > 0 ? fiktiveSteuer / fiktivesGesamteinkommen : 0;
+    
+    // Wende diesen Satz auf die laufenden Bezüge an
+    regularIncomeTax = taxableRegularIncome * effektiverSteuersatz;
+  } else {
+    // Ohne Sonderzahlungen: Standard progressive Steuer
+    regularIncomeTax = calculateAustrianTaxProgressive(taxableRegularIncome);
+  }
 
   // Für Transparenz: Gesamtes zu versteuerndes Einkommen (inkl. Sonderzahlungen)
   const taxableIncome = taxableRegularIncome + (salaryMonths - 12) * grossIncomeEUR;
 
-  // Sonderzahlungen (13. und 14. Gehalt) - begünstigte Besteuerung
-  // Diese werden NICHT mit Sonderausgaben verrechnet
+  // Sonderzahlungen (13. und 14. Gehalt) - begünstigte Besteuerung mit 6%
   let specialPaymentsTax = 0;
   if (salaryMonths >= 13) {
-    // 13. Gehalt (z.B. Urlaubszuschuss)
     specialPaymentsTax += calculateSpecialPaymentTax(regularMonthlyIncome);
   }
   if (salaryMonths === 14) {
-    // 14. Gehalt (z.B. Weihnachtsgeld)
     specialPaymentsTax += calculateSpecialPaymentTax(regularMonthlyIncome);
   }
 
