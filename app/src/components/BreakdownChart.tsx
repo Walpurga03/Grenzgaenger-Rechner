@@ -38,8 +38,8 @@ export function BreakdownChart({ result }: BreakdownChartProps) {
       color: '#dc2626', // red-dark
     },
     {
-      name: 'Netto (Ø 14)',
-      value: result.averageMonthlyNetEUR,
+      name: 'Netto',
+      value: result.finalNetEUR,
       color: '#16a34a', // green-dark
     },
   ];
@@ -53,10 +53,17 @@ export function BreakdownChart({ result }: BreakdownChartProps) {
     }).format(Math.abs(value));
   };
 
+  // Dynamischer Titel basierend auf Gehältern
+  const salaryMonths = result.yearlyNetEUR / result.finalNetEUR;
+  const isAverage = salaryMonths > 12;
+  const chartTitle = isAverage 
+    ? `📊 Monatliche Übersicht (Ø ${Math.round(salaryMonths)} Gehälter)`
+    : '📊 Monatliche Übersicht';
+
   return (
     <div className="bg-white rounded-lg p-4 sm:p-6">
       <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-4">
-        📊 Breakdown: Brutto → Netto (Ø 14 Gehälter)
+        {chartTitle}
       </h3>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
