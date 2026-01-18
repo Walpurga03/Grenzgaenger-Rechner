@@ -39,7 +39,7 @@ export function BreakdownChart({ result }: BreakdownChartProps) {
     },
     {
       name: 'Netto (Ø 14)',
-      value: result.finalNetEURAustrianComparison,
+      value: result.averageMonthlyNetEUR,
       color: '#16a34a', // green-dark
     },
   ];
@@ -107,7 +107,7 @@ export function BreakdownChart({ result }: BreakdownChartProps) {
           </div>
           <div>
             <p className="text-slate-600">Netto (Ø 14 Geh.):</p>
-            <p className="font-semibold text-green-600">{formatCurrency(result.finalNetEURAustrianComparison)}</p>
+            <p className="font-semibold text-green-600">{formatCurrency(result.averageMonthlyNetEUR)}</p>
           </div>
           <div>
             <p className="text-slate-600">Gesamt-Abzüge:</p>

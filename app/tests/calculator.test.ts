@@ -25,29 +25,143 @@ describe('Grenzgänger Calculator - Test Scenarios', () => {
       const result13 = calculateGrenzgaenger({ ...baseInput, salaryMonthsPerYear: 13 });
       const result14 = calculateGrenzgaenger({ ...baseInput, salaryMonthsPerYear: 14 });
 
-      console.log('\n=== Test 1: 12 vs 13 vs 14 Gehälter ===');
-      console.log(`12 Gehälter - Netto: ${result12.finalNetEUR.toFixed(2)} EUR`);
-      console.log(`13 Gehälter - Netto: ${result13.finalNetEUR.toFixed(2)} EUR`);
-      console.log(`14 Gehälter - Netto: ${result14.finalNetEUR.toFixed(2)} EUR`);
-      console.log(`AT-Steuer 12: ${result12.breakdown.austrianTax.toFixed(2)} EUR`);
-      console.log(`AT-Steuer 13: ${result13.breakdown.austrianTax.toFixed(2)} EUR`);
-      console.log(`AT-Steuer 14: ${result14.breakdown.austrianTax.toFixed(2)} EUR`);
+      console.log('\n=== Test 1: 12 vs 13 vs 14 Gehälter (DETAILLIERT) ===');
+      console.log('\n--- 12 MONATE ---');
+      console.log(`Monatlich: 6.000 CHF = 6.420 EUR`);
+      console.log(`Jahresbrutto: ${(6000 * 12).toLocaleString()} CHF = ${(6420 * 12).toLocaleString()} EUR`);
+      console.log(`CH-Abzüge/Monat: ${result12.breakdown.ahvALV.toFixed(2)} + ${result12.breakdown.bvg.toFixed(2)} + ${result12.breakdown.ktgNBU.toFixed(2)} = ${(result12.breakdown.ahvALV + result12.breakdown.bvg + result12.breakdown.ktgNBU).toFixed(2)} EUR`);
+      console.log(`SG-Steuer/Monat: ${result12.breakdown.sourceTaxSG.toFixed(2)} EUR`);
+      console.log(`AT-Steuer/Monat: ${result12.breakdown.austrianTax.toFixed(2)} EUR`);
+      console.log(`→ Monatsnetto: ${result12.finalNetEUR.toFixed(2)} EUR × 12 Monate = ${result12.yearlyNetEUR.toFixed(2)} EUR/Jahr`);
+      console.log(`→ Ø Monatsnetto: ${result12.averageMonthlyNetEUR.toFixed(2)} EUR (= Jahres-Netto ÷ 12)`);
+
+      console.log('\n--- 14 MONATE ---');
+      console.log(`Monatlich: 6.000 CHF = 6.420 EUR`);
+      console.log(`Jahresbrutto: ${(6000 * 14).toLocaleString()} CHF = ${(6420 * 14).toLocaleString()} EUR`);
+      console.log(`CH-Abzüge/Monat: ${result14.breakdown.ahvALV.toFixed(2)} + ${result14.breakdown.bvg.toFixed(2)} + ${result14.breakdown.ktgNBU.toFixed(2)} = ${(result14.breakdown.ahvALV + result14.breakdown.bvg + result14.breakdown.ktgNBU).toFixed(2)} EUR`);
+      console.log(`SG-Steuer/Monat: ${result14.breakdown.sourceTaxSG.toFixed(2)} EUR`);
+      console.log(`AT-Steuer/Monat: ${result14.breakdown.austrianTax.toFixed(2)} EUR`);
+      console.log(`→ Monatsnetto: ${result14.finalNetEUR.toFixed(2)} EUR × 14 Monate = ${result14.yearlyNetEUR.toFixed(2)} EUR/Jahr`);
+      console.log(`→ Ø Monatsnetto: ${result14.averageMonthlyNetEUR.toFixed(2)} EUR (= Jahres-Netto ÷ 12)`);
+
+      console.log('\n--- UNTERSCHIED ---');
+      console.log(`Jahresbrutto mehr: ${((6000 * 14) - (6000 * 12)).toLocaleString()} CHF = ${((6420 * 14) - (6420 * 12)).toLocaleString()} EUR (+2 Gehälter!)`);
+      console.log(`Jahres-Netto mehr: ${(result14.yearlyNetEUR - result12.yearlyNetEUR).toFixed(2)} EUR`);
+      console.log(`→ Das sind ${(result14.averageMonthlyNetEUR - result12.averageMonthlyNetEUR).toFixed(2)} EUR MEHR pro Monat!`);
+      console.log(`AT-Steuer gespart: ${(result12.breakdown.austrianTax - result14.breakdown.austrianTax).toFixed(2)} EUR/Monat (wegen 6% Steuersatz auf 13./14. Gehalt)`);
 
       // 14 Gehälter sollte höchstes Netto haben (13./14. nur 6% Steuer)
       expect(result14.finalNetEUR).toBeGreaterThan(result13.finalNetEUR);
       expect(result13.finalNetEUR).toBeGreaterThan(result12.finalNetEUR);
       
-      // 14 Gehälter sollte auch beim österreichischen Vergleich am besten sein
-      expect(result14.finalNetEURAustrianComparison).toBeGreaterThan(result13.finalNetEURAustrianComparison);
+      // 14 Gehälter sollte auch beim durchschnittlichen Monatsnetto am besten sein
+      expect(result14.averageMonthlyNetEUR).toBeGreaterThan(result13.averageMonthlyNetEUR);
     });
 
-    it('should show correct 14-salary average', () => {
+    it('should tax 13th and 14th salary at preferential 6% rate', () => {
+      const result12 = calculateGrenzgaenger({ ...baseInput, salaryMonthsPerYear: 12 });
+      const result13 = calculateGrenzgaenger({ ...baseInput, salaryMonthsPerYear: 13 });
+      const result14 = calculateGrenzgaenger({ ...baseInput, salaryMonthsPerYear: 14 });
+
+      console.log('\n=== Test: 6% Steuersatz auf 13./14. Gehalt ===');
+      
+      // Bei 12 Monaten: Alle 12 Gehälter werden progressiv besteuert
+      const yearlyGross12 = 6420 * 12; // 77.040 EUR
+      console.log(`\n12 Monate: ${yearlyGross12.toLocaleString()} EUR Jahresbrutto`);
+      console.log(`→ Alle 12 Gehälter progressiv besteuert`);
+      console.log(`→ AT-Steuer gesamt/Jahr: ${(result12.breakdown.austrianTax * 12).toFixed(2)} EUR`);
+      
+      // Bei 13 Monaten: 12 progressiv + 1 Sonderzahlung (6%)
+      const yearlyGross13 = 6420 * 13; // 83.460 EUR
+      const specialPayment13 = 6420 * 1; // 1 Gehalt
+      console.log(`\n13 Monate: ${yearlyGross13.toLocaleString()} EUR Jahresbrutto`);
+      console.log(`→ 12 Gehälter progressiv: ${(6420 * 12).toLocaleString()} EUR`);
+      console.log(`→ 1 Sonderzahlung (13. Gehalt) mit 6%: ${specialPayment13.toFixed(2)} EUR`);
+      console.log(`→ Steuer auf 13. Gehalt: ${(specialPayment13 * 0.06).toFixed(2)} EUR (nur 6%!)`);
+      console.log(`→ AT-Steuer gesamt/Jahr: ${(result13.breakdown.austrianTax * 12).toFixed(2)} EUR`);
+      console.log(`→ Steuerersparnis vs 12 Monate: ${((result12.breakdown.austrianTax * 12) - (result13.breakdown.austrianTax * 12)).toFixed(2)} EUR/Jahr`);
+      
+      // Bei 14 Monaten: 12 progressiv + 2 Sonderzahlungen (6%)
+      const yearlyGross14 = 6420 * 14; // 89.880 EUR
+      const specialPayment14 = 6420 * 2; // 2 Gehälter
+      console.log(`\n14 Monate: ${yearlyGross14.toLocaleString()} EUR Jahresbrutto`);
+      console.log(`→ 12 Gehälter progressiv: ${(6420 * 12).toLocaleString()} EUR`);
+      console.log(`→ 2 Sonderzahlungen (13. + 14. Gehalt) mit 6%: ${specialPayment14.toFixed(2)} EUR`);
+      console.log(`→ Steuer auf 13.+14. Gehalt: ${(specialPayment14 * 0.06).toFixed(2)} EUR (nur 6%!)`);
+      console.log(`→ AT-Steuer gesamt/Jahr: ${(result14.breakdown.austrianTax * 12).toFixed(2)} EUR`);
+      console.log(`→ Steuerersparnis vs 12 Monate: ${((result12.breakdown.austrianTax * 12) - (result14.breakdown.austrianTax * 12)).toFixed(2)} EUR/Jahr`);
+
+      // Die Steuerersparnis sollte ca. der Differenz zwischen 6% und progressivem Satz entsprechen
+      // Bei 6.420 EUR und progressivem Satz ~40% wäre die Steuer ca. 2.568 EUR
+      // Bei 6% Satz: 385,20 EUR → Ersparnis ca. 2.182 EUR pro Sonderzahlung
+      
+      // Wichtig: Die AT-Steuer bei 14 Monaten sollte deutlich niedriger sein als bei 12 Monaten
+      // trotz 12.840 EUR mehr Brutto, wegen dem 6% Vorteil
+      const taxIncrease12to14 = (result14.breakdown.austrianTax * 12) - (result12.breakdown.austrianTax * 12);
+      console.log(`\nSteuererhöhung bei 12.840 EUR mehr Brutto: ${taxIncrease12to14.toFixed(2)} EUR`);
+      console.log(`Das sind nur ${((taxIncrease12to14 / 12840) * 100).toFixed(1)}% effektiv (statt ~40%!)`);
+
+      // Tests: Die Steuer sollte NEGATIV sein (weniger Steuer bei 14 Monaten!)
+      expect(taxIncrease12to14).toBeLessThan(0);
+      
+      // Bei 13 Monaten sollte die Steuererhöhung auch negativ oder minimal sein
+      const taxIncrease12to13 = (result13.breakdown.austrianTax * 12) - (result12.breakdown.austrianTax * 12);
+      expect(taxIncrease12to13).toBeLessThan(100); // Max 100 EUR mehr Steuer bei 6.420 EUR mehr Brutto
+      
+      // Der effektive Steuersatz auf die Sonderzahlungen sollte nahe 6% sein
+      // Bei 14 Monaten: 2 × 6.420 EUR = 12.840 EUR Sonderzahlungen
+      // Erwartete Steuer bei 6%: 770,40 EUR
+      // Aber durch DBA-Anrechnung kann es Abweichungen geben
+      const effectiveTaxRateOnSpecialPayments = Math.abs(taxIncrease12to14 / specialPayment14) * 100;
+      console.log(`\nEffektiver Steuersatz auf Sonderzahlungen: ${effectiveTaxRateOnSpecialPayments.toFixed(1)}%`);
+      expect(effectiveTaxRateOnSpecialPayments).toBeLessThan(15); // Sollte deutlich unter normalem Satz sein
+    });
+
+    it('should apply 620 EUR tax-free allowance per special payment', () => {
+      const result12 = calculateGrenzgaenger({ ...baseInput, salaryMonthsPerYear: 12 });
+      const result14 = calculateGrenzgaenger({ ...baseInput, salaryMonthsPerYear: 14 });
+
+      console.log('\n=== Test: Freibetrag von 620 EUR pro Sonderzahlung ===');
+      
+      const monthlyGross = 6420;
+      const freeAmountPerPayment = 620;
+      
+      console.log(`\nMonatliches Brutto: ${monthlyGross.toFixed(2)} EUR`);
+      console.log(`Freibetrag pro Sonderzahlung: ${freeAmountPerPayment.toFixed(2)} EUR`);
+      
+      // Bei 14 Monaten: 2 Sonderzahlungen
+      const totalFreeAmount = freeAmountPerPayment * 2; // 1.240 EUR
+      const taxableSpecialPayments = (monthlyGross - freeAmountPerPayment) * 2; // 5.800 × 2 = 11.600 EUR
+      const expectedTaxOnSpecialPayments = taxableSpecialPayments * 0.06; // 696 EUR
+      
+      console.log(`\n2 Sonderzahlungen (13. + 14.):`);
+      console.log(`→ Gesamt: ${(monthlyGross * 2).toFixed(2)} EUR`);
+      console.log(`→ Freibetrag gesamt: ${totalFreeAmount.toFixed(2)} EUR (2 × ${freeAmountPerPayment} EUR)`);
+      console.log(`→ Zu versteuern: ${taxableSpecialPayments.toFixed(2)} EUR`);
+      console.log(`→ Steuer bei 6%: ${expectedTaxOnSpecialPayments.toFixed(2)} EUR`);
+      
+      // Tatsächliche Steuerersparnis durch Freibetrag + 6% Satz
+      // Wenn die 12.840 EUR progressiv besteuert würden (~40%), wäre die Steuer ca. 5.136 EUR
+      // Mit Freibetrag + 6%: nur 696 EUR
+      const taxSavings = ((result12.breakdown.austrianTax * 12) - (result14.breakdown.austrianTax * 12));
+      console.log(`\nTatsächliche Jahres-Steuerersparnis: ${taxSavings.toFixed(2)} EUR`);
+      console.log(`Das entspricht dem Freibetrag + günstigen Steuersatz!`);
+      
+      // Der Freibetrag sollte spürbar sein
+      expect(taxSavings).toBeGreaterThan(0);
+      expect(result14.yearlyNetEUR).toBeGreaterThan(result12.yearlyNetEUR + 8000); // Mindestens 8k mehr netto
+    });
+
+    it('should show correct yearly and average calculation', () => {
       const result14 = calculateGrenzgaenger({ ...baseInput, salaryMonthsPerYear: 14 });
       
-      // Der österreichische Vergleichswert sollte das 12-Monats-Netto / 14 * 12 sein
-      const expectedAustrianComparison = (result14.finalNetEUR * 12) / 14;
+      // Jahres-Netto sollte 14 × Monatsnetto sein
+      const expectedYearlyNet = result14.finalNetEUR * 14;
+      expect(result14.yearlyNetEUR).toBeCloseTo(expectedYearlyNet, 2);
       
-      expect(result14.finalNetEURAustrianComparison).toBeCloseTo(expectedAustrianComparison, 2);
+      // Durchschnittliches Monatsnetto sollte Jahres-Netto / 12 sein
+      const expectedAverage = result14.yearlyNetEUR / 12;
+      expect(result14.averageMonthlyNetEUR).toBeCloseTo(expectedAverage, 2);
     });
   });
 

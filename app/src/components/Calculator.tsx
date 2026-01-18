@@ -338,6 +338,39 @@ export function Calculator() {
             </select>
           </div>
         </div>
+
+        {/* Jahresbrutto Anzeige */}
+        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <p className="text-xs text-slate-600 mb-1">Jahresbrutto (CHF)</p>
+              <p className="text-lg font-bold text-blue-900">
+                {formatCurrency(grossSalary * salaryMonths, 'CHF')}
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {grossSalary.toLocaleString('de-CH')} × {salaryMonths} Monate
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-600 mb-1">Jahresbrutto (EUR)</p>
+              <p className="text-lg font-bold text-blue-900">
+                {formatCurrency(grossSalary * salaryMonths * exchangeRate, 'EUR')}
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Umgerechnet mit {exchangeRate.toFixed(4)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-600 mb-1">Ø Monatsbrutto (EUR)</p>
+              <p className="text-lg font-bold text-blue-900">
+                {formatCurrency((grossSalary * salaryMonths * exchangeRate) / 12, 'EUR')}
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Jahresbrutto ÷ 12 Monate
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Collapsible 
@@ -645,10 +678,12 @@ export function Calculator() {
             </p>
           </div>
           <div className="col-span-2 sm:col-span-1 bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-3 md:p-4 border border-green-200">
-            <p className="text-xs md:text-sm text-slate-600 mb-1">Monatsnetto (Ø 14 Geh.)</p>
-            <p className="text-xl md:text-2xl font-bold text-green-600">{formatCurrency(result.finalNetEURAustrianComparison, 'EUR')}</p>
+            <p className="text-xs md:text-sm text-slate-600 mb-1">Ø Netto/Monat</p>
+            <p className="text-xl md:text-2xl font-bold text-green-600">{formatCurrency(result.averageMonthlyNetEUR, 'EUR')}</p>
             <p className="text-[10px] md:text-xs text-slate-500 mt-1">
-              Bei 12×: {formatCurrency(result.finalNetEUR, 'EUR')}
+              {formatCurrency(result.yearlyNetEUR, 'EUR')}/Jahr
+              <span className="hidden sm:inline mx-2">•</span>
+              <span className="block sm:inline">{salaryMonths}× Gehalt</span>
             </p>
           </div>
         </div>
@@ -661,7 +696,7 @@ export function Calculator() {
           <p className="text-xs text-green-800">
             In Österreich ist der Standard <strong>14 Gehälter</strong> (12 Monatsgehälter + Urlaubsgeld + Weihnachtsgeld).
             Für bessere Vergleichbarkeit wird das Jahresnetto ({formatCurrency(result.finalNetEUR * 12, 'EUR')}) 
-            auf 14 Monate verteilt = <strong>{formatCurrency(result.finalNetEURAustrianComparison, 'EUR')}/Monat</strong>.
+            auf 12 Monate verteilt = <strong>{formatCurrency(result.averageMonthlyNetEUR, 'EUR')}/Monat</strong>.
           </p>
         </div>
 

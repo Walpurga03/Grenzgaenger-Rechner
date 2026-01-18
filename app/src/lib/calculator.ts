@@ -48,8 +48,9 @@ export interface GrenzgaengerResult {
   austrianTaxCalculated: number; // Theoretische AT-Steuer (für Transparenz)
   
   // Finale Werte
-  finalNetEUR: number;
-  finalNetEURAustrianComparison: number; // Vergleichswert mit 14 Gehältern (österreichischer Standard)
+  finalNetEUR: number; // Monatsnetto bei DIESEM Gehältermodell
+  yearlyNetEUR: number; // Jahres-Netto (finalNetEUR × Anzahl Gehälter)
+  averageMonthlyNetEUR: number; // Durchschnitt auf 12 Monate (yearlyNetEUR / 12)
   totalTaxBurden: number;
   effectiveTaxRate: number;
   
@@ -146,10 +147,14 @@ export function calculateGrenzgaenger(
     - input.insuranceContributionEUR 
     + input.familyBonusPlusEUR;
 
-  // Österreichischer Vergleichswert: Jahresnetto auf 14 Gehälter verteilt
-  // In Österreich ist der Standard 14 Gehälter (12 + Urlaubs- & Weihnachtsgeld)
-  const yearlyNetEUR = finalNetEUR * 12;
-  const finalNetEURAustrianComparison = yearlyNetEUR / 14;
+  // WICHTIG: Jahres-Netto und Durchschnitt berechnen
+  // Bei 12 Monaten: 12 Gehälter × finalNetEUR
+  // Bei 13 Monaten: 13 Gehälter × finalNetEUR
+  // Bei 14 Monaten: 14 Gehälter × finalNetEUR
+  const yearlyNetEUR = finalNetEUR * salaryMonthsPerYear;
+  
+  // Durchschnittliches monatliches Netto (auf 12 Monate umgerechnet für Vergleichbarkeit)
+  const averageMonthlyNetEUR = yearlyNetEUR / 12;
 
   // Gesamte Steuerlast
   const totalTaxBurden = swissDeductionsActual.totalDeductions + stGallenTax.sourceTax;
@@ -170,8 +175,9 @@ export function calculateGrenzgaenger(
     austrianTaxLiabilityEUR: austrianTaxMonthly, // Tatsächliche monatliche AT-Steuerlast
     austrianTaxCalculated: austrianTaxMonthly,
     
-    finalNetEUR,
-    finalNetEURAustrianComparison,
+    finalNetEUR, // Monatsnetto bei DIESEM Gehältermodell (z.B. bei 14 Monaten = 1/14 des Jahres)
+    yearlyNetEUR, // Jahres-Netto total
+    averageMonthlyNetEUR, // Durchschnittliches monatliches Netto (auf 12 Monate umgerechnet)
     totalTaxBurden: totalTaxBurdenEUR,
     effectiveTaxRate,
     

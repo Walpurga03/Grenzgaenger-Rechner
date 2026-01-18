@@ -11,6 +11,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // @ts-ignore - Vitest test config
   test: {
     globals: true,
     environment: 'jsdom',

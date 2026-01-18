@@ -243,7 +243,7 @@ export function PDFReport({ result, inputData }: PDFReportProps) {
         {/* Endergebnis */}
         <View style={styles.summaryBox} wrap={false}>
           <Text style={styles.summaryTitle}>Monatliches Nettoeinkommen (Österreich-Standard: 14 Gehälter)</Text>
-          <Text style={styles.summaryAmount}>{formatCurrency(result.finalNetEURAustrianComparison, 'EUR')}</Text>
+          <Text style={styles.summaryAmount}>{formatCurrency(result.averageMonthlyNetEUR, 'EUR')}</Text>
           <Text style={{ fontSize: 10, color: '#166534', textAlign: 'center', marginTop: 5 }}>
             Vergleichswert bei 12 Gehältern: {formatCurrency(result.finalNetEUR, 'EUR')}
           </Text>
