@@ -162,14 +162,16 @@ export function calculateGrenzgaenger(
   // ========================================
   // Jahres-Netto:
   // + Jahresbrutto (EUR)
-  // - Schweizer Sozialversicherungen (EUR)
-  // - Österreichische Steuer (EUR) [schon MIT DBA-Anrechnung der Quellensteuer!]
-  // - Versicherungen (EUR)
-  // + Familienbonus (EUR, jährlich)
+  // - Schweizer Sozialversicherungen (EUR) [real bezahlt in CH]
+  // - Schweizer Quellensteuer (EUR) [real bezahlt in CH, wird aber in AT angerechnet!]
+  // - Österreichische Steuer (EUR) [nachzahlen in AT, NACH DBA-Anrechnung der CH-Quellensteuer]
+  // - Versicherungen (EUR) [real bezahlt]
+  // + Familienbonus (EUR, jährlich) [bereits in AT-Steuer berücksichtigt]
   const yearlyFamilyBonusEUR = input.familyBonusPlusEUR * 12;
   
   const yearlyNetEUR = yearlyGrossEUR 
     - yearlySwissSocialSecurityEUR 
+    - yearlySourceTaxEUR  // WICHTIG: CH-Quellensteuer muss abgezogen werden!
     - yearlyAustrianTaxEUR 
     - yearlyInsuranceEUR 
     + yearlyFamilyBonusEUR;
