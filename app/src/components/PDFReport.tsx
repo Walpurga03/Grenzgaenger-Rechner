@@ -237,6 +237,24 @@ export function PDFReport({ result, inputData }: PDFReportProps) {
               <Text style={styles.tableCol}>Familienbonus Plus</Text>
               <Text style={styles.tableColRight}>+ {formatCurrency(result.breakdown.familyBonus, 'EUR')}</Text>
             </View>
+            {inputData.commuterAllowanceEUR > 0 && (
+              <View style={styles.tableRow}>
+                <Text style={styles.tableCol}>Pendlerpauschale ({inputData.commuterDistanceKm} km)</Text>
+                <Text style={styles.tableColRight}>- {formatCurrency(inputData.commuterAllowanceEUR, 'EUR')}/Monat (Steuerreduktion)</Text>
+              </View>
+            )}
+            {inputData.commuterDistanceKm > 0 && (
+              <View style={styles.tableRow}>
+                <Text style={styles.tableCol}>Pendlereuro ({inputData.commuterDistanceKm} km × 2)</Text>
+                <Text style={styles.tableColRight}>- {formatCurrency((inputData.commuterDistanceKm * 2) / 12, 'EUR')}/Monat (Steuerreduktion)</Text>
+              </View>
+            )}
+            {inputData.soleEarnerBonusEUR > 0 && (
+              <View style={styles.tableRow}>
+                <Text style={styles.tableCol}>Alleinverdienerabsetzbetrag</Text>
+                <Text style={styles.tableColRight}>- {formatCurrency(inputData.soleEarnerBonusEUR / 12, 'EUR')}/Monat (Steuerreduktion)</Text>
+              </View>
+            )}
           </View>
         </View>
 
