@@ -199,14 +199,17 @@ export function PDFReport({ result, inputData }: PDFReportProps) {
 
         {/* Berechnungsübersicht */}
         <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionTitle}>Berechnungsübersicht</Text>
+          <Text style={styles.sectionTitle}>Monatliche Berechnungsübersicht</Text>
+          <Text style={{ fontSize: 8, color: '#64748b', marginBottom: 5, fontStyle: 'italic' }}>
+            Alle Beträge sind MONATLICH. Für Jahreswerte siehe "Steuerstatistik" unten.
+          </Text>
           <View style={styles.table}>
             <View style={styles.tableRowHeader}>
               <Text style={styles.tableCol}>Position</Text>
-              <Text style={styles.tableColRight}>Betrag (EUR)</Text>
+              <Text style={styles.tableColRight}>Monatlicher Betrag (EUR)</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={styles.tableCol}>Bruttolohn</Text>
+              <Text style={styles.tableCol}>Bruttolohn (monatlich)</Text>
               <Text style={styles.tableColRight}>{formatCurrency(result.grossSalaryEUR, 'EUR')}</Text>
             </View>
             <View style={styles.tableRow}>
