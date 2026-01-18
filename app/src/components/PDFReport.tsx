@@ -229,7 +229,7 @@ export function PDFReport({ result, inputData }: PDFReportProps) {
               <Text style={styles.tableColRight}>- {formatCurrency(result.breakdown.sourceTaxSG, 'EUR')}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={styles.tableCol}>Versicherungsbeitrag (AT)</Text>
+              <Text style={styles.tableCol}>Versicherungsbeitrag (Sonderausgabe)</Text>
               <Text style={styles.tableColRight}>- {formatCurrency(result.breakdown.insuranceContribution, 'EUR')}</Text>
             </View>
             <View style={styles.tableRow}>

@@ -626,7 +626,7 @@ export function Calculator() {
           {validationErrors.insuranceContribution ? (
             <p className="text-xs text-red-600 mt-1">{validationErrors.insuranceContribution}</p>
           ) : (
-            <p className="text-xs text-slate-500 mt-1">z.B. Krankenversicherung, Lebensversicherung</p>
+            <p className="text-xs text-slate-500 mt-1">Sonderausgabe: senkt Steuerbasis, wird aber voll vom Netto abgezogen</p>
           )}
         </div>
       </Collapsible>
@@ -716,7 +716,7 @@ export function Calculator() {
                 <span className="text-slate-600">Versicherungsbeitrag:</span>
                 <span className="font-semibold text-red-600">- {formatCurrency(result.breakdown.insuranceContribution, 'EUR')}</span>
               </div>
-              <p className="text-xs text-slate-500 mt-1">Versicherung steuerlich absetzbar</p>
+              <p className="text-xs text-slate-500 mt-1">Sonderausgabe: senkt Steuerbasis (~35% Ersparnis), volle Kosten vom Netto</p>
             </div>
           </div>
           

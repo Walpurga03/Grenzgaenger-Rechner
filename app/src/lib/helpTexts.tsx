@@ -334,13 +334,23 @@ export const helpTexts: Record<string, HelpContent> = {
   },
 
   insuranceContribution: {
-    title: 'Versicherungsbeitrag (AT)',
+    title: 'Versicherungsbeitrag (AT) - Sonderausgaben',
     content: (
       <>
         <p className="mb-3">
           Hier können Sie Ihre <strong>österreichischen Versicherungsbeiträge</strong> eintragen, 
           die Sie monatlich als Grenzgänger zahlen.
         </p>
+        
+        <div className="mb-4 bg-yellow-50 border border-yellow-300 rounded p-3">
+          <p className="font-semibold mb-2 text-yellow-900">⚠️ Wichtig zu verstehen:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm text-yellow-800">
+            <li><strong>Sonderausgaben:</strong> Versicherungen reduzieren Ihr zu versteuerndes Einkommen</li>
+            <li><strong>Steuerersparnis:</strong> Bei 550 € Versicherung sparen Sie ca. 180-190 € Steuern (bei ~35% Steuersatz)</li>
+            <li><strong>Echte Kosten:</strong> Die vollen 550 € werden aber trotzdem von Ihrem Netto abgezogen!</li>
+            <li><strong>Netto-Effekt:</strong> Sie zahlen real ca. 360-370 € aus eigener Tasche (550 € - Steuerersparnis)</li>
+          </ul>
+        </div>
         
         <div className="mb-4">
           <p className="font-semibold mb-2">🏥 Absetzbare Versicherungen:</p>
