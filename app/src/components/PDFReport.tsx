@@ -277,20 +277,32 @@ export function PDFReport({ result, inputData }: PDFReportProps) {
         <View style={styles.section} wrap={false}>
           <Text style={styles.sectionTitle}>Steuerstatistik</Text>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Effektive Steuerlast:</Text>
-            <Text style={styles.infoValue}>{result.effectiveTaxRate.toFixed(2)}%</Text>
+            <Text style={styles.infoLabel}>Jahresbrutto (CHF):</Text>
+            <Text style={styles.infoValue}>
+              {formatCurrency(inputData.grossSalaryCHF * inputData.salaryMonths, 'CHF')}
+            </Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Jahresbrutto (EUR):</Text>
+            <Text style={styles.infoValue}>
+              {formatCurrency(result.grossSalaryEUR * inputData.salaryMonths, 'EUR')}
+            </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Gesamt-Abzüge (jährlich):</Text>
             <Text style={styles.infoValue}>
-              {formatCurrency(result.totalTaxBurden * 12, 'EUR')}
+              {formatCurrency(result.totalTaxBurden * inputData.salaryMonths, 'EUR')}
             </Text>
           </View>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Netto-Jahresgehalt:</Text>
+            <Text style={styles.infoLabel}>Jahres-Netto (EUR):</Text>
             <Text style={styles.infoValue}>
-              {formatCurrency(result.finalNetEUR * 12, 'EUR')}
+              {formatCurrency(result.yearlyNetEUR, 'EUR')}
             </Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Effektive Steuerlast:</Text>
+            <Text style={styles.infoValue}>{result.effectiveTaxRate.toFixed(2)}%</Text>
           </View>
         </View>
 
