@@ -242,13 +242,16 @@ export function PDFReport({ result, inputData }: PDFReportProps) {
 
         {/* Endergebnis */}
         <View style={styles.summaryBox} wrap={false}>
-          <Text style={styles.summaryTitle}>Monatliches Nettoeinkommen (Österreich-Standard: 14 Gehälter)</Text>
+          <Text style={styles.summaryTitle}>Durchschnittliches Monatsnetto (auf 12 Monate gerechnet)</Text>
           <Text style={styles.summaryAmount}>{formatCurrency(result.averageMonthlyNetEUR, 'EUR')}</Text>
           <Text style={{ fontSize: 10, color: '#166534', textAlign: 'center', marginTop: 5 }}>
-            Vergleichswert bei 12 Gehältern: {formatCurrency(result.finalNetEUR, 'EUR')}
+            Jahres-Netto: {formatCurrency(result.yearlyNetEUR, 'EUR')} ({inputData.salaryMonths}× Gehälter)
+          </Text>
+          <Text style={{ fontSize: 9, color: '#15803d', textAlign: 'center', marginTop: 3 }}>
+            Monatsnetto: {formatCurrency(result.finalNetEUR, 'EUR')} × {inputData.salaryMonths} = {formatCurrency(result.yearlyNetEUR, 'EUR')}/Jahr
           </Text>
           <Text style={{ fontSize: 8, color: '#15803d', textAlign: 'center', marginTop: 3, fontStyle: 'italic' }}>
-            Hinweis: In Österreich werden Gehälter meist auf 14 Monate verteilt (12 + Urlaubs- & Weihnachtsgeld)
+            Für besseren Vergleich: Jahres-Netto ÷ 12 = {formatCurrency(result.averageMonthlyNetEUR, 'EUR')}/Monat
           </Text>
         </View>
 
