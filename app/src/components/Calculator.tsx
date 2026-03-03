@@ -30,6 +30,17 @@ export function Calculator() {
   const [insuranceContribution, setInsuranceContribution] = useState<number>(0);
   const [soleEarnerBonus, setSoleEarnerBonus] = useState<number>(0);
   const [isSoleEarner, setIsSoleEarner] = useState<boolean>(false);
+  
+  // State für Schweizer Sozialversicherungssätze (optional, Defaults aus TAX_CONFIG)
+  const [ahvRate, setAhvRate] = useState<number>(5.3);
+  const [alvRate, setAlvRate] = useState<number>(1.1);
+  const [bvgRate, setBvgRate] = useState<number>(7.0);
+  const [ktgRate, setKtgRate] = useState<number>(1.4);
+  const [nbuRate, setNbuRate] = useState<number>(1.0);
+  
+  // State für manuelle Quellensteuer (optional)
+  const [useManualSourceTax, setUseManualSourceTax] = useState<boolean>(false);
+  const [manualSourceTax, setManualSourceTax] = useState<number>(0);
 
   // State für Info-Modals
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -214,10 +225,18 @@ export function Calculator() {
       pensionerBonusEUR: 0, // Nicht mehr verwendet
       insuranceContributionEUR: insuranceContribution,
       exchangeRate,
+      // Schweizer Sozialversicherungssätze (in Prozent -> Dezimal)
+      ahvRate: ahvRate / 100,
+      alvRate: alvRate / 100,
+      bvgRate: bvgRate / 100,
+      ktgRate: ktgRate / 100,
+      nbuRate: nbuRate / 100,
+      // Manuelle Quellensteuer (falls aktiviert)
+      manualSourceTaxCHF: useManualSourceTax ? manualSourceTax : undefined,
     };
 
     return calculateGrenzgaenger(input);
-  }, [grossSalary, exchangeRate, salaryMonths, age, maritalStatus, childrenDetails, commuterDistanceKm, commuterAllowance, familyBonus, soleEarnerBonus, insuranceContribution]);
+  }, [grossSalary, exchangeRate, salaryMonths, age, maritalStatus, childrenDetails, commuterDistanceKm, commuterAllowance, familyBonus, soleEarnerBonus, insuranceContribution, ahvRate, alvRate, bvgRate, ktgRate, nbuRate, useManualSourceTax, manualSourceTax]);
 
   const formatCurrency = (amount: number, currency: 'CHF' | 'EUR') => {
     return new Intl.NumberFormat('de-CH', {
@@ -373,8 +392,234 @@ export function Calculator() {
         </div>
       </div>
 
-      <Collapsible 
-        title="Persönliche Daten" 
+      <Collapsible
+        title="Schweizer Sozialversicherungssätze (Konfigurierbar)"
+        defaultOpen={false}
+        badge="⚙️"
+      >
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <p className="text-sm text-blue-900 mb-2">
+            <strong>💡 Hinweis:</strong> Diese Werte sind bereits mit den aktuellen Standardsätzen vorausgefüllt.
+            Sie können diese bei Bedarf anpassen (z.B. für individuelle Arbeitgebervereinbarungen).
+          </p>
+          <p className="text-xs text-blue-700">
+            Die Werte werden in Prozent eingegeben (z.B. 5.3 für 5,3%).
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+              AHV-Beitragssatz (%)
+              <InfoButton onClick={() => setActiveModal('ahvRate')} />
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={ahvRate}
+              onChange={(e) => setAhvRate(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="z.B. 5.3"
+            />
+            <p className="text-xs text-slate-500 mt-1">Standard: 5.3% (AHV/IV/EO)</p>
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+              ALV-Beitragssatz (%)
+              <InfoButton onClick={() => setActiveModal('alvRate')} />
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={alvRate}
+              onChange={(e) => setAlvRate(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="z.B. 1.1"
+            />
+            <p className="text-xs text-slate-500 mt-1">Standard: 1.1% (Arbeitslosenversicherung)</p>
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+              BVG-Beitragssatz (%)
+              <InfoButton onClick={() => setActiveModal('bvgRate')} />
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={bvgRate}
+              onChange={(e) => setBvgRate(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="z.B. 7.0"
+            />
+            <p className="text-xs text-slate-500 mt-1">Standard: 7.0% (Pensionskasse)</p>
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+              KTG-Beitragssatz (%)
+              <InfoButton onClick={() => setActiveModal('ktgRate')} />
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={ktgRate}
+              onChange={(e) => setKtgRate(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="z.B. 1.4"
+            />
+            <p className="text-xs text-slate-500 mt-1">Standard: 1.4% (Krankentaggeld)</p>
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+              NBU-Beitragssatz (%)
+              <InfoButton onClick={() => setActiveModal('nbuRate')} />
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={nbuRate}
+              onChange={(e) => setNbuRate(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="z.B. 1.0"
+            />
+            <p className="text-xs text-slate-500 mt-1">Standard: 1.0% (Nichtberufsunfall)</p>
+          </div>
+
+          <div className="flex items-end">
+            <button
+              onClick={() => {
+                setAhvRate(5.3);
+                setAlvRate(1.1);
+                setBvgRate(7.0);
+                setKtgRate(1.4);
+                setNbuRate(1.0);
+                setNotification({
+                  type: 'success',
+                  message: 'Sozialversicherungssätze auf Standardwerte zurückgesetzt',
+                });
+                setTimeout(() => setNotification(null), 3000);
+              }}
+              className="w-full px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors text-sm font-medium"
+            >
+              Auf Standard zurücksetzen
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 bg-slate-50 border border-slate-200 rounded-lg p-3">
+          <p className="text-sm font-semibold text-slate-700 mb-2">Berechnete monatliche Abzüge:</p>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+            <div>
+              <span className="text-slate-600">AHV:</span>
+              <span className="font-semibold text-slate-900 ml-1">
+                CHF {(grossSalary * (ahvRate / 100)).toFixed(2)}
+              </span>
+            </div>
+            <div>
+              <span className="text-slate-600">ALV:</span>
+              <span className="font-semibold text-slate-900 ml-1">
+                CHF {(grossSalary * (alvRate / 100)).toFixed(2)}
+              </span>
+            </div>
+            <div>
+              <span className="text-slate-600">BVG:</span>
+              <span className="font-semibold text-slate-900 ml-1">
+                CHF {age >= 18 ? (grossSalary * (bvgRate / 100)).toFixed(2) : '0.00'}
+              </span>
+            </div>
+            <div>
+              <span className="text-slate-600">KTG:</span>
+              <span className="font-semibold text-slate-900 ml-1">
+                CHF {(grossSalary * (ktgRate / 100)).toFixed(2)}
+              </span>
+            </div>
+            <div>
+              <span className="text-slate-600">NBU:</span>
+              <span className="font-semibold text-slate-900 ml-1">
+                CHF {(grossSalary * (nbuRate / 100)).toFixed(2)}
+              </span>
+            </div>
+          </div>
+          <div className="mt-2 pt-2 border-t border-slate-300">
+            <span className="text-sm text-slate-700">Gesamt:</span>
+            <span className="font-bold text-slate-900 ml-2">
+              CHF {(
+                grossSalary * (ahvRate / 100) +
+                grossSalary * (alvRate / 100) +
+                (age >= 18 ? grossSalary * (bvgRate / 100) : 0) +
+                grossSalary * (ktgRate / 100) +
+                grossSalary * (nbuRate / 100)
+              ).toFixed(2)}
+            </span>
+          </div>
+        </div>
+
+        {/* Manuelle Quellensteuer-Eingabe */}
+        <div className="mt-6 pt-6 border-t border-slate-200">
+          <div className="flex items-center gap-3 mb-4">
+            <input
+              type="checkbox"
+              id="useManualSourceTax"
+              checked={useManualSourceTax}
+              onChange={(e) => setUseManualSourceTax(e.target.checked)}
+              className="w-5 h-5 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500"
+            />
+            <label htmlFor="useManualSourceTax" className="flex items-center gap-2 text-base font-semibold text-slate-800 cursor-pointer">
+              Quellensteuer manuell eingeben
+              <InfoButton onClick={() => setActiveModal('manualSourceTax')} />
+            </label>
+          </div>
+
+          {useManualSourceTax && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="mb-3">
+                <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+                  Quellensteuer St. Gallen (CHF) monatlich
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={manualSourceTax}
+                  onChange={(e) => setManualSourceTax(Number(e.target.value))}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="z.B. 450.00"
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  Geben Sie den Betrag aus Ihrer Lohnabrechnung ein
+                </p>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                <p className="text-sm text-blue-900 mb-1">
+                  <strong>💡 Hinweis:</strong> Die automatische Berechnung ist deaktiviert.
+                </p>
+                <p className="text-xs text-blue-700">
+                  Die Quellensteuer wird nun mit dem von Ihnen eingegebenen Wert berechnet,
+                  unabhängig von Familienstand und Kindern.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {!useManualSourceTax && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <p className="text-sm text-green-900">
+                <strong>✓ Automatische Berechnung aktiv</strong>
+              </p>
+              <p className="text-xs text-green-700 mt-1">
+                Die Quellensteuer wird automatisch basierend auf Ihrem Bruttolohn,
+                Familienstand und Anzahl der Kinder berechnet.
+              </p>
+            </div>
+          )}
+        </div>
+      </Collapsible>
+
+      <Collapsible
+        title="Persönliche Daten"
         defaultOpen={true}
         badge={childrenDetails.length > 0 ? `${childrenDetails.length} Kind${childrenDetails.length > 1 ? 'er' : ''}` : undefined}
       >

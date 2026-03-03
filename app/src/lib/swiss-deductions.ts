@@ -9,6 +9,13 @@ export interface SwissDeductionsInput {
   grossSalaryCHF: number;
   yearlyGrossCHF: number;
   age: number;
+  
+  // Optionale benutzerdefinierte Raten (überschreiben TAX_CONFIG)
+  ahvRate?: number;
+  alvRate?: number;
+  bvgRate?: number;
+  ktgRate?: number;
+  nbuRate?: number;
 }
 
 export interface SwissDeductionsResult {
@@ -30,30 +37,37 @@ export function calculateSwissDeductions(
   const { grossSalaryCHF, yearlyGrossCHF, age } = input;
   const config = TAX_CONFIG.switzerland;
 
-  // AHV/IV/EO - aus Config
-  const ahv = grossSalaryCHF * config.ahv.rate;
+  // Verwende benutzerdefinierte Raten oder Defaults aus Config
+  const ahvRate = input.ahvRate ?? config.ahv.rate;
+  const alvRate = input.alvRate ?? config.alv.baseRate;
+  const bvgRate = input.bvgRate ?? config.bvg.rate;
+  const ktgRate = input.ktgRate ?? config.ktg.rate;
+  const nbuRate = input.nbuRate ?? config.nbu.rate;
+
+  // AHV/IV/EO - mit konfigurierbarem Rate
+  const ahv = grossSalaryCHF * ahvRate;
 
   // ALV - Arbeitslosenversicherung
   // Wichtig: Verwende yearlyGrossCHF für korrekte Berechnung bei 13/14 Monatsgehältern
   let alv: number;
   if (yearlyGrossCHF <= config.alv.yearlyLimit) {
-    alv = grossSalaryCHF * config.alv.baseRate;
+    alv = grossSalaryCHF * alvRate;
   } else {
     const overLimit = (yearlyGrossCHF - config.alv.yearlyLimit) / 12;
-    alv = grossSalaryCHF * config.alv.baseRate + overLimit * config.alv.additionalRate;
+    alv = grossSalaryCHF * alvRate + overLimit * config.alv.additionalRate;
   }
 
-  // BVG - Berufliche Vorsorge (aus Config)
+  // BVG - Berufliche Vorsorge (mit konfigurierbarem Rate)
   let bvg = 0;
   if (age >= config.bvg.minAge && yearlyGrossCHF >= config.bvg.minYearlySalary) {
-    bvg = grossSalaryCHF * config.bvg.rate;
+    bvg = grossSalaryCHF * bvgRate;
   }
 
-  // KTG - Krankentaggeldversicherung (aus Config)
-  const ktg = grossSalaryCHF * config.ktg.rate;
+  // KTG - Krankentaggeldversicherung (mit konfigurierbarem Rate)
+  const ktg = grossSalaryCHF * ktgRate;
 
-  // NBU - Nichtberufsunfallversicherung (aus Config)
-  const nbu = grossSalaryCHF * config.nbu.rate;
+  // NBU - Nichtberufsunfallversicherung (mit konfigurierbarem Rate)
+  const nbu = grossSalaryCHF * nbuRate;
 
   const totalDeductions = ahv + alv + bvg + ktg + nbu;
   const netSalaryCHF = grossSalaryCHF - totalDeductions;

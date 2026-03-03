@@ -388,4 +388,247 @@ export const helpTexts: Record<string, HelpContent> = {
       </>
     ),
   },
+
+  ahvRate: {
+    title: 'AHV-Beitragssatz (Schweiz)',
+    content: (
+      <>
+        <p className="mb-3">
+          Die <strong>AHV (Alters- und Hinterlassenenversicherung)</strong> ist die obligatorische
+          Schweizer Rentenversicherung.
+        </p>
+        
+        <div className="mb-4 bg-blue-50 border border-blue-200 rounded p-3">
+          <p className="font-semibold mb-2 text-blue-900">📊 Standardsatz 2026:</p>
+          <p className="text-sm text-blue-800">
+            <strong>5.3%</strong> des Bruttolohns (inkl. IV/EO)
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">Was ist enthalten:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li><strong>AHV:</strong> Alters- und Hinterlassenenversicherung (4.35%)</li>
+            <li><strong>IV:</strong> Invalidenversicherung (0.7%)</li>
+            <li><strong>EO:</strong> Erwerbsersatzordnung (0.25%)</li>
+          </ul>
+        </div>
+
+        <p className="text-sm text-slate-600">
+          💡 Dieser Wert ist normalerweise fix. Ändern Sie ihn nur, wenn Ihr Arbeitgeber
+          einen abweichenden Satz anwendet.
+        </p>
+      </>
+    ),
+  },
+
+  alvRate: {
+    title: 'ALV-Beitragssatz (Schweiz)',
+    content: (
+      <>
+        <p className="mb-3">
+          Die <strong>ALV (Arbeitslosenversicherung)</strong> ist die obligatorische
+          Schweizer Arbeitslosenversicherung.
+        </p>
+        
+        <div className="mb-4 bg-blue-50 border border-blue-200 rounded p-3">
+          <p className="font-semibold mb-2 text-blue-900">📊 Standardsatz 2026:</p>
+          <p className="text-sm text-blue-800">
+            <strong>1.1%</strong> des Bruttolohns (bis CHF 148'200/Jahr)
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">⚠️ Wichtig:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Bis CHF 148'200 Jahreseinkommen: 1.1%</li>
+            <li>Über CHF 148'200 Jahreseinkommen: zusätzlich 0.5% auf den übersteigenden Betrag</li>
+          </ul>
+        </div>
+
+        <p className="text-sm text-slate-600">
+          💡 Die App berechnet automatisch den erhöhten Satz für hohe Einkommen.
+        </p>
+      </>
+    ),
+  },
+
+  bvgRate: {
+    title: 'BVG-Beitragssatz (Schweiz)',
+    content: (
+      <>
+        <p className="mb-3">
+          Die <strong>BVG (Berufliche Vorsorge)</strong> ist die obligatorische
+          Schweizer Pensionskasse (2. Säule).
+        </p>
+        
+        <div className="mb-4 bg-blue-50 border border-blue-200 rounded p-3">
+          <p className="font-semibold mb-2 text-blue-900">📊 Standardsatz 2026:</p>
+          <p className="text-sm text-blue-800">
+            <strong>7.0%</strong> des Bruttolohns (Durchschnittswert)
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">⚠️ Wichtig zu wissen:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Gilt erst ab <strong>18 Jahren</strong></li>
+            <li>Mindestjahreseinkommen: CHF 22'050</li>
+            <li>Der Satz variiert je nach Pensionskasse (5-15%)</li>
+            <li>Steigt mit dem Alter (25, 35, 45, 55 Jahre)</li>
+          </ul>
+        </div>
+
+        <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+          <p className="text-sm font-semibold text-yellow-900 mb-1">💡 Tipp:</p>
+          <p className="text-sm text-yellow-800">
+            Schauen Sie auf Ihre Lohnabrechnung für den exakten BVG-Satz Ihrer Pensionskasse.
+            Dieser kann zwischen 5% und 15% liegen.
+          </p>
+        </div>
+      </>
+    ),
+  },
+
+  ktgRate: {
+    title: 'KTG-Beitragssatz (Schweiz)',
+    content: (
+      <>
+        <p className="mb-3">
+          Die <strong>KTG (Krankentaggeldversicherung)</strong> sichert Sie bei längerer
+          Krankheit ab.
+        </p>
+        
+        <div className="mb-4 bg-blue-50 border border-blue-200 rounded p-3">
+          <p className="font-semibold mb-2 text-blue-900">📊 Standardsatz 2026:</p>
+          <p className="text-sm text-blue-800">
+            <strong>1.4%</strong> des Bruttolohns (Durchschnittswert)
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">Was wird abgedeckt:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Lohnfortzahlung bei Krankheit (meist 80% des Lohns)</li>
+            <li>Wartefrist: typisch 2-3 Tage</li>
+            <li>Dauer: bis zu 720 Tage</li>
+          </ul>
+        </div>
+
+        <p className="text-sm text-slate-600">
+          💡 Der Satz variiert je nach Arbeitgeber und Versicherung (0.5-2%).
+        </p>
+      </>
+    ),
+  },
+
+  nbuRate: {
+    title: 'NBU-Beitragssatz (Schweiz)',
+    content: (
+      <>
+        <p className="mb-3">
+          Die <strong>NBU (Nichtberufsunfallversicherung)</strong> deckt Unfälle außerhalb
+          der Arbeitszeit ab.
+        </p>
+        
+        <div className="mb-4 bg-blue-50 border border-blue-200 rounded p-3">
+          <p className="font-semibold mb-2 text-blue-900">📊 Standardsatz 2026:</p>
+          <p className="text-sm text-blue-800">
+            <strong>1.0%</strong> des Bruttolohns (Durchschnittswert)
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">Was wird abgedeckt:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Unfälle in der Freizeit</li>
+            <li>Sport- und Freizeitunfälle</li>
+            <li>Verkehrsunfälle außerhalb der Arbeit</li>
+          </ul>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">⚠️ Wichtig:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Nur bei Arbeitszeit <strong>≥ 8 Stunden/Woche</strong></li>
+            <li>Wird vom Arbeitnehmer bezahlt (nicht vom Arbeitgeber)</li>
+            <li>Der Satz variiert je nach Risiko (0.5-2%)</li>
+          </ul>
+        </div>
+
+        <p className="text-sm text-slate-600">
+          💡 Prüfen Sie Ihre Lohnabrechnung für den exakten NBU-Satz.
+        </p>
+      </>
+    ),
+  },
+
+  manualSourceTax: {
+    title: 'Manuelle Quellensteuer-Eingabe',
+    content: (
+      <>
+        <p className="mb-3">
+          Mit dieser Option können Sie die <strong>Quellensteuer</strong> manuell eingeben,
+          anstatt sie automatisch berechnen zu lassen.
+        </p>
+        
+        <div className="mb-4 bg-blue-50 border border-blue-200 rounded p-3">
+          <p className="font-semibold mb-2 text-blue-900">💡 Wann ist das sinnvoll?</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm text-blue-800">
+            <li>Sie haben Ihre Lohnabrechnung und kennen den exakten Betrag</li>
+            <li>Ihr Arbeitgeber verwendet spezielle Tarife</li>
+            <li>Sie möchten verschiedene Szenarien durchrechnen</li>
+            <li>Die automatische Berechnung weicht von Ihrer Realität ab</li>
+          </ul>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">📋 So finden Sie die Quellensteuer:</p>
+          <ol className="list-decimal pl-5 space-y-1 text-sm">
+            <li>Schauen Sie auf Ihre monatliche Lohnabrechnung</li>
+            <li>Suchen Sie nach "Quellensteuer" oder "Steuerabzug"</li>
+            <li>Der Betrag ist in CHF angegeben</li>
+            <li>Geben Sie den monatlichen Betrag hier ein</li>
+          </ol>
+        </div>
+
+        <div className="mb-4">
+          <p className="font-semibold mb-2">⚙️ Automatische Berechnung:</p>
+          <p className="text-sm mb-2">
+            Wenn diese Option <strong>deaktiviert</strong> ist, berechnet die App die Quellensteuer
+            automatisch basierend auf:
+          </p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Ihrem Bruttolohn</li>
+            <li>Ihrem Familienstand (ledig/verheiratet)</li>
+            <li>Der Anzahl Ihrer Kinder</li>
+            <li>Den offiziellen Tarifen des Kantons St. Gallen</li>
+          </ul>
+        </div>
+
+        <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-3">
+          <p className="text-sm font-semibold text-yellow-900 mb-1">⚠️ Wichtig:</p>
+          <p className="text-sm text-yellow-800">
+            Die manuelle Eingabe überschreibt die automatische Berechnung komplett.
+            Familienstand und Kinder werden dann für die Quellensteuer ignoriert
+            (aber weiterhin für die österreichische Steuer verwendet).
+          </p>
+        </div>
+
+        <div className="bg-green-50 border border-green-200 rounded p-3">
+          <p className="text-sm font-semibold text-green-900 mb-1">💰 Beispielwerte:</p>
+          <ul className="text-sm text-green-800 space-y-1">
+            <li>• CHF 6'000 Brutto, ledig, keine Kinder: ca. CHF 450-550</li>
+            <li>• CHF 6'000 Brutto, verheiratet, 2 Kinder: ca. CHF 250-350</li>
+            <li>• CHF 8'000 Brutto, ledig, keine Kinder: ca. CHF 700-850</li>
+          </ul>
+        </div>
+
+        <p className="text-sm text-slate-600 mt-3">
+          💡 Tipp: Vergleichen Sie die automatische Berechnung mit Ihrer Lohnabrechnung.
+          Bei größeren Abweichungen verwenden Sie die manuelle Eingabe.
+        </p>
+      </>
+    ),
+  },
 };

@@ -28,6 +28,45 @@ export interface AustrianTaxResult {
   taxAfterBonuses: number;
   taxAfterSwissCredit: number; // Nach Anrechnung CH-Quellensteuer
   netIncomeEUR: number;
+  // DBA-Anrechnung (4,5%-Kappung) - NEU!
+  creditableSourceTax: number;      // Anrechenbare Quellensteuer
+  nonCreditableSourceTax: number;   // Nicht anrechenbare Steuer
+  taxLeakagePercent: number;        // Verlust in Prozent
+}
+
+/**
+ * Berechnet die anrechenbare Schweizer Quellensteuer nach DBA
+ * Art. 15 Abs. 4: Maximal 4,5% des Bruttolohns
+ */
+export function calculateCreditableSourceTax(
+  grossIncomeEUR: number,
+  actualSourceTaxEUR: number
+): {
+  creditable: number;
+  nonCreditable: number;
+  leakagePercent: number;
+} {
+  const DBA_MAX_RATE = 0.045; // 4,5% Kappungsgrenze
+  
+  // Maximale anrechenbare Steuer nach DBA
+  const maxCreditableEUR = grossIncomeEUR * DBA_MAX_RATE;
+  
+  // Tatsächlich anrechenbar (das Minimum)
+  const creditableEUR = Math.min(actualSourceTaxEUR, maxCreditableEUR);
+  
+  // Nicht anrechenbare Steuer ("Steuer-Leakage")
+  const nonCreditableEUR = actualSourceTaxEUR - creditableEUR;
+  
+  // Verlust in Prozent
+  const leakagePercent = grossIncomeEUR > 0
+    ? (nonCreditableEUR / grossIncomeEUR) * 100
+    : 0;
+  
+  return {
+    creditable: creditableEUR,
+    nonCreditable: nonCreditableEUR,
+    leakagePercent,
+  };
 }
 
 /**
@@ -113,9 +152,15 @@ export function calculateAustrianTax(
   
   const taxAfterBonuses = Math.max(0, incomeTax - totalBonuses);
   
-  // Schweizer Quellensteuer als Vorsteuer anrechnen
+  // DBA-Anrechnung mit 4,5%-Kappung (KRITISCH!)
   const yearlySwissSourceTax = swissSourceTaxEUR * 12;
-  const taxAfterSwissCredit = Math.max(0, taxAfterBonuses - yearlySwissSourceTax);
+  const yearlyGrossIncome = grossIncomeEUR * 12;
+  
+  // Berechne anrechenbare und nicht anrechenbare Quellensteuer
+  const dbaCredit = calculateCreditableSourceTax(yearlyGrossIncome, yearlySwissSourceTax);
+  
+  // Steuer nach DBA-Anrechnung (nur anrechenbare Steuer wird abgezogen!)
+  const taxAfterSwissCredit = Math.max(0, taxAfterBonuses - dbaCredit.creditable);
   
   // Monatliche Werte
   const monthlyTax = taxAfterSwissCredit / 12;
@@ -130,6 +175,10 @@ export function calculateAustrianTax(
     taxAfterBonuses,
     taxAfterSwissCredit,
     netIncomeEUR,
+    // DBA-Anrechnung (4,5%-Kappung)
+    creditableSourceTax: dbaCredit.creditable,
+    nonCreditableSourceTax: dbaCredit.nonCreditable,
+    taxLeakagePercent: dbaCredit.leakagePercent,
   };
 }
 

@@ -29,6 +29,16 @@ export interface GrenzgaengerInput {
   
   // Wechselkurs
   exchangeRate: number;
+  
+  // Konfigurierbare Schweizer Sozialversicherungssätze (optional, Defaults aus TAX_CONFIG)
+  ahvRate?: number;        // AHV-Beitragssatz (Standard: 5.3%)
+  alvRate?: number;        // ALV-Beitragssatz (Standard: 1.1%)
+  bvgRate?: number;        // BVG-Beitragssatz (Standard: 7%)
+  ktgRate?: number;        // KTG-Beitragssatz (Standard: 1.4%)
+  nbuRate?: number;        // NBU-Beitragssatz (Standard: 1%)
+  
+  // Konfigurierbare Quellensteuer (optional, sonst automatisch berechnet)
+  manualSourceTaxCHF?: number;  // Manuelle Quellensteuer pro Monat (CHF)
 }
 
 export interface GrenzgaengerResult {
@@ -47,12 +57,26 @@ export interface GrenzgaengerResult {
   austrianTaxLiabilityEUR: number;
   austrianTaxCalculated: number; // Theoretische AT-Steuer (für Transparenz)
   
+  // DBA-Anrechnung (4,5%-Kappung) - NEU!
+  creditableSourceTaxEUR: number;      // Anrechenbare Quellensteuer (max. 4,5%)
+  nonCreditableSourceTaxEUR: number;   // Nicht anrechenbare Steuer (Verlust)
+  taxLeakagePercent: number;           // Verlust in Prozent vom Brutto
+  
   // Finale Werte
   finalNetEUR: number; // Monatsnetto bei DIESEM Gehältermodell
   yearlyNetEUR: number; // Jahres-Netto (finalNetEUR × Anzahl Gehälter)
   averageMonthlyNetEUR: number; // Durchschnitt auf 12 Monate (yearlyNetEUR / 12)
   totalTaxBurden: number;
   effectiveTaxRate: number;
+  
+  // Kennzahlen für AT-Steuererklärung (Formular L1i) - NEU!
+  taxDeclarationData: {
+    kennzahl701: number;  // Bruttobezüge (EUR/Jahr)
+    kennzahl721: number;  // SV-Beiträge (EUR/Jahr)
+    kennzahl377: number;  // Anrechenbare ausländische Steuer (EUR/Jahr)
+    kennzahl374: number;  // Nicht anrechenbare Steuer (EUR/Jahr)
+    kennzahl770: number;  // Steuerpflichtiges Einkommen (EUR/Jahr)
+  };
   
   // Details für Visualisierung
   breakdown: {
@@ -101,18 +125,34 @@ export function calculateGrenzgaenger(
     grossSalaryCHF: grossSalaryCHF,
     yearlyGrossCHF,
     age: input.age,
+    // Optionale benutzerdefinierte Raten weitergeben
+    ahvRate: input.ahvRate,
+    alvRate: input.alvRate,
+    bvgRate: input.bvgRate,
+    ktgRate: input.ktgRate,
+    nbuRate: input.nbuRate,
   });
 
   // 2b) St. Gallen Quellensteuer (pro Monat)
-  const stGallenTax = calculateStGallenTax({
-    grossSalaryCHF: grossSalaryCHF,
-    maritalStatus: input.maritalStatus,
-    children: input.childrenDetails.length,
-  });
+  // Verwende manuelle Quellensteuer, falls angegeben, sonst automatisch berechnen
+  let monthlySourceTaxCHF: number;
+  
+  if (input.manualSourceTaxCHF !== undefined && input.manualSourceTaxCHF !== null) {
+    // Manuelle Quellensteuer verwenden
+    monthlySourceTaxCHF = input.manualSourceTaxCHF;
+  } else {
+    // Automatisch berechnen
+    const stGallenTax = calculateStGallenTax({
+      grossSalaryCHF: grossSalaryCHF,
+      maritalStatus: input.maritalStatus,
+      children: input.childrenDetails.length,
+    });
+    monthlySourceTaxCHF = stGallenTax.sourceTax;
+  }
 
   // Jahreswerte der Schweizer Abzüge
   const yearlySwissSocialSecurityCHF = swissDeductions.totalDeductions * salaryMonthsPerYear;
-  const yearlySourceTaxCHF = stGallenTax.sourceTax * 12; // Quellensteuer nur auf 12 Monate
+  const yearlySourceTaxCHF = monthlySourceTaxCHF * 12; // Quellensteuer nur auf 12 Monate
 
   // ========================================
   // SCHRITT 3: IN EUR UMRECHNEN (ZUERST!)
@@ -195,6 +235,18 @@ export function calculateGrenzgaenger(
   const effectiveTaxRate = yearlyGrossEUR > 0 ? (totalDeductionsEUR / yearlyGrossEUR) * 100 : 0;
 
   // ========================================
+  // DBA-ANRECHNUNG UND KENNZAHLEN
+  // ========================================
+  // Kennzahlen für AT-Steuererklärung (Formular L1i)
+  const taxDeclarationData = {
+    kennzahl701: yearlyGrossEUR,                                    // Bruttobezüge (EUR/Jahr)
+    kennzahl721: yearlySwissSocialSecurityEUR,                      // SV-Beiträge (EUR/Jahr)
+    kennzahl377: austrianTaxCalc.creditableSourceTax,               // Anrechenbare Steuer (EUR/Jahr)
+    kennzahl374: austrianTaxCalc.nonCreditableSourceTax,            // Nicht anrechenbare Steuer (EUR/Jahr)
+    kennzahl770: yearlyGrossEUR - yearlySwissSocialSecurityEUR,     // Steuerpflichtiges Einkommen (EUR/Jahr)
+  };
+
+  // ========================================
   // RÜCKGABEWERTE
   // ========================================
   return {
@@ -202,8 +254,8 @@ export function calculateGrenzgaenger(
     grossSalaryCHF: monthlyGrossCHF,
     swissDeductions: swissDeductions.totalDeductions,
     netAfterDeductionsCHF: swissDeductions.netSalaryCHF,
-    sourceTaxCHF: stGallenTax.sourceTax,
-    netAfterTaxCHF: stGallenTax.netAfterTax,
+    sourceTaxCHF: monthlySourceTaxCHF,
+    netAfterTaxCHF: swissDeductions.netSalaryCHF - monthlySourceTaxCHF,
     
     // Umrechnung (monatliche Werte)
     grossSalaryEUR: monthlyGrossEUR,
@@ -213,12 +265,20 @@ export function calculateGrenzgaenger(
     austrianTaxLiabilityEUR: monthlyAustrianTaxEUR,
     austrianTaxCalculated: monthlyAustrianTaxEUR,
     
+    // DBA-Anrechnung (4,5%-Kappung) - NEU!
+    creditableSourceTaxEUR: austrianTaxCalc.creditableSourceTax,
+    nonCreditableSourceTaxEUR: austrianTaxCalc.nonCreditableSourceTax,
+    taxLeakagePercent: austrianTaxCalc.taxLeakagePercent,
+    
     // Finale Netto-Werte
     finalNetEUR, // Monatsnetto bei diesem Gehältermodell
     yearlyNetEUR, // Jahres-Netto gesamt
     averageMonthlyNetEUR, // Durchschnitt auf 12 Monate
     totalTaxBurden: monthlyTotalTaxBurden,
     effectiveTaxRate,
+    
+    // Kennzahlen für AT-Steuererklärung - NEU!
+    taxDeclarationData,
     
     // Breakdown (monatliche Werte für Visualisierung)
     breakdown: {
